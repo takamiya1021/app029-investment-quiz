@@ -65,7 +65,7 @@
   - recordResult, addWrongQuestion
 - **Refactor**: 状態管理最適化
 
-#### 【 】1-3. LocalStorage統合（1時間）
+#### 【x】1-3. LocalStorage統合（1時間）
 - **Red**: 永続化テスト
 - **Green**: `lib/storage.ts` 実装
 - **Refactor**: デバウンス処理
