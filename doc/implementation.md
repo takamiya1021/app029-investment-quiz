@@ -95,7 +95,7 @@
   - 経済用語（8問）
 - **Refactor**: 問題内容レビュー・改善
 
-#### 【 】2-3. questionBankモジュール実装（1時間）
+#### 【x】2-3. questionBankモジュール実装（1時間）
 - **Red**: 問題読み込みテスト
 - **Green**: `lib/questionBank.ts` 実装
   - JSON読み込み
