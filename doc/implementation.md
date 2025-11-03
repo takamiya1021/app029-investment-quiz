@@ -19,23 +19,23 @@
 
 ### タスク
 
-#### 【 】0-1. Next.jsプロジェクト初期化（30分）
+#### 【x】0-1. Next.jsプロジェクト初期化（30分）
 - `npx create-next-app@latest app029 --typescript --tailwind --app`
 - **Red**: 動作確認テスト
 - **Green**: プロジェクト起動確認
 - **Refactor**: 不要ファイル削除
 
-#### 【 】0-2. Jestセットアップ（1時間）
+#### 【x】0-2. Jestセットアップ（1時間）
 - **Red**: Jest設定ファイルのテスト
 - **Green**: Jest, @testing-library/react インストール
 - **Refactor**: 設定最適化
 
-#### 【 】0-3. Playwrightセットアップ（1時間）
+#### 【x】0-3. Playwrightセットアップ（1時間）
 - **Red**: E2Eテストスケルトン
 - **Green**: Playwright インストール・設定
 - **Refactor**: テスト構成整理
 
-#### 【 】0-4. テスト実行確認（30分）
+#### 【x】0-4. テスト実行確認（30分）
 - **Red**: ダミーテスト作成
 - **Green**: テスト実行スクリプト設定
 - **Refactor**: テストコマンド整理
