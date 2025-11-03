@@ -46,7 +46,7 @@
 
 ### タスク
 
-#### 【 】1-1. 型定義作成（1時間）
+#### 【x】1-1. 型定義作成（1時間）
 - **Red**: 型定義のテスト
 - **Green**: Question, QuizSession, UserProgress, AppSettings 定義
 - **Refactor**: 型の共通化
