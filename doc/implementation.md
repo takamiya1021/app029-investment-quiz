@@ -51,7 +51,7 @@
 - **Green**: Question, QuizSession, UserProgress, AppSettings 定義
 - **Refactor**: 型の共通化
 
-#### 【 】1-2. Zustand Store実装（3時間）
+#### 【x】1-2. Zustand Store実装（3時間）
 - **Red**: Store各アクションのテスト
   ```typescript
   test('should start quiz', () => {
