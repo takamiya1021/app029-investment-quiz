@@ -6,6 +6,7 @@ import { useQuizStore } from '@/store/useQuizStore';
 import { generateQuiz } from '@/lib/quizEngine';
 import { getAvailableCategories, getQuestionsByCategory } from '@/lib/questionBank';
 import type { Difficulty } from '@/lib/types';
+import ExplanationCard from './ExplanationCard';
 
 const DEFAULT_DIFFICULTY: Difficulty = 'beginner';
 
@@ -205,6 +206,7 @@ function QuestionView() {
 
 function CompletedView() {
   const lastResult = useQuizStore((state) => state.lastResult)!;
+  const session = useQuizStore((state) => state.currentSession);
   const reset = useQuizStore((state) => state.reset);
 
   const stats = useMemo(() => {
@@ -217,6 +219,24 @@ function CompletedView() {
       }))
       .sort((a, b) => b.total - a.total);
   }, [lastResult.categoryBreakdown]);
+
+  if (!session) {
+    return (
+      <section className="min-h-screen bg-slate-950 px-6 py-16 text-white">
+        <div className="mx-auto max-w-3xl rounded-3xl border border-white/10 bg-slate-900/50 p-8 text-center backdrop-blur">
+          <h1 className="text-2xl font-semibold">結果を表示できません</h1>
+          <p className="mt-2 text-white/70">再度クイズを受けてください。</p>
+          <button
+            type="button"
+            onClick={reset}
+            className="mt-6 rounded-full bg-emerald-400 px-6 py-3 text-sm font-semibold text-slate-900"
+          >
+            クイズ一覧へ戻る
+          </button>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="min-h-screen bg-slate-950 px-6 py-16 text-white">
@@ -256,6 +276,21 @@ function CompletedView() {
           >
             ホームに戻る
           </Link>
+        </div>
+
+        <div className="mt-10 space-y-4">
+          <h2 className="text-xl font-semibold text-white">問題ごとの解説</h2>
+          <p className="text-sm text-white/70">あなたの回答と解説を振り返りましょう。</p>
+          <div className="space-y-4">
+            {session.questions.map((question, index) => (
+              <ExplanationCard
+                key={question.id}
+                question={question}
+                userAnswer={session.answers[index]}
+                index={index}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

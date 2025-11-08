@@ -4,6 +4,16 @@ import QuizPage from '@/app/quiz/page';
 import { useQuizStore } from '@/store/useQuizStore';
 import { generateQuiz } from '@/lib/quizEngine';
 
+const manualQuestion = {
+  id: 'manual-1',
+  category: '株式投資の基本',
+  difficulty: 'beginner' as const,
+  question: 'テスト用の問題ですか？',
+  choices: ['はい', 'いいえ', 'たぶん', 'わからない'],
+  correctAnswer: 0,
+  explanation: 'テスト用に用意した解説です。',
+};
+
 describe('Quiz page', () => {
   beforeEach(() => {
     useQuizStore.setState((state) => ({
@@ -43,5 +53,24 @@ describe('Quiz page', () => {
     await userEvent.click(next);
 
     expect(screen.getByText(/第2問/)).toBeInTheDocument();
+  });
+
+  it('shows explanations after finishing the quiz', async () => {
+    act(() => {
+      useQuizStore.getState().startQuiz({
+        category: manualQuestion.category,
+        difficulty: manualQuestion.difficulty,
+        questions: [manualQuestion],
+      });
+    });
+
+    render(<QuizPage />);
+    await userEvent.click(screen.getByRole('button', { name: '選択肢 1' }));
+    const finishButton = screen.getByRole('button', { name: '結果を見る' });
+    await userEvent.click(finishButton);
+
+    expect(screen.getByText('お疲れさまでした！')).toBeInTheDocument();
+    expect(screen.getByText(manualQuestion.question)).toBeInTheDocument();
+    expect(screen.getByText(manualQuestion.explanation)).toBeInTheDocument();
   });
 });
