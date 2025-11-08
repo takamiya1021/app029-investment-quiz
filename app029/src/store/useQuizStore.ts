@@ -1,5 +1,13 @@
 import { create, StateCreator } from 'zustand';
-import { Difficulty, Question, QuizSession } from '@/lib/types';
+import {
+  Difficulty,
+  Question,
+  QuizSession,
+  UserProgress,
+  CategoryStat,
+} from '@/lib/types';
+import { getAllQuestions } from '@/lib/questionBank';
+import { loadProgress, saveProgress } from '@/lib/storage';
 
 export type QuizStatus = 'idle' | 'in-progress' | 'completed';
 
@@ -27,13 +35,19 @@ export interface QuizStoreState {
   status: QuizStatus;
   currentSession: QuizSession | null;
   lastResult: QuizResult | null;
-  wrongQuestions: string[];
+  progress: UserProgress;
+  questions: Question[];
   startQuiz: (payload: StartQuizPayload) => void;
   answerQuestion: (answer: number) => void;
   nextQuestion: () => void;
   finishQuiz: () => void;
-  recordResult: () => QuizResult | null;
+  recordResult: (correct: number, total: number, category: string) => void;
   addWrongQuestion: (questionId: string) => void;
+  loadQuestions: () => void;
+  addAIGeneratedQuestion: (question: Question) => void;
+  currentQuestion: () => Question | null;
+  score: () => { correct: number; total: number };
+  categoryAccuracy: (category: string) => number;
   reset: () => void;
 }
 
@@ -41,6 +55,31 @@ const cryptoRandomUUID =
   typeof crypto !== 'undefined' && 'randomUUID' in crypto
     ? () => crypto.randomUUID()
     : () => `session-${Math.random().toString(36).slice(2, 10)}`;
+
+const todayISODate = (): string => new Date().toISOString().split('T')[0];
+
+const createInitialProgress = (): UserProgress =>
+  loadProgress() ?? {
+    totalQuizzes: 0,
+    totalCorrect: 0,
+    totalQuestions: 0,
+    categoryStats: {},
+    studyDays: 0,
+    lastStudyDate: '',
+    wrongQuestions: [],
+  };
+
+const cloneCategoryStats = (stats: Record<string, CategoryStat>): Record<string, CategoryStat> =>
+  Object.entries(stats).reduce<Record<string, CategoryStat>>((acc, [key, value]) => {
+    acc[key] = { ...value };
+    return acc;
+  }, {});
+
+const cloneProgress = (progress: UserProgress): UserProgress => ({
+  ...progress,
+  categoryStats: cloneCategoryStats(progress.categoryStats),
+  wrongQuestions: [...progress.wrongQuestions],
+});
 
 const computeResult = (session: QuizSession): QuizResult => {
   const { questions, answers } = session;
@@ -83,11 +122,82 @@ const computeResult = (session: QuizSession): QuizResult => {
   };
 };
 
+const mergeWrongQuestions = (current: string[], nextIds: string[]): string[] => {
+  const merged = new Set(current);
+  nextIds.forEach((id) => merged.add(id));
+  return Array.from(merged);
+};
+
+const applySessionResultToProgress = (
+  progress: UserProgress,
+  session: QuizSession,
+  result: QuizResult
+): UserProgress => {
+  const updated = cloneProgress(progress);
+  updated.totalQuizzes += 1;
+  updated.totalCorrect += result.correctAnswers;
+  updated.totalQuestions += result.totalQuestions;
+
+  Object.entries(result.categoryBreakdown).forEach(([category, stats]) => {
+    const current = updated.categoryStats[category] ?? { correct: 0, total: 0 };
+    updated.categoryStats[category] = {
+      correct: current.correct + stats.correct,
+      total: current.total + stats.total,
+    };
+  });
+
+  const wrongIds = session.questions.reduce<string[]>((acc, question, index) => {
+    if (session.answers[index] !== question.correctAnswer) {
+      acc.push(question.id);
+    }
+    return acc;
+  }, []);
+
+  updated.wrongQuestions = mergeWrongQuestions(updated.wrongQuestions, wrongIds);
+
+  const today = todayISODate();
+  if (updated.lastStudyDate !== today) {
+    updated.studyDays += 1;
+    updated.lastStudyDate = today;
+  }
+
+  saveProgress(updated);
+  return updated;
+};
+
+const recordCategoryProgress = (
+  progress: UserProgress,
+  correct: number,
+  total: number,
+  category: string
+): UserProgress => {
+  const updated = cloneProgress(progress);
+  updated.totalQuizzes += 1;
+  updated.totalCorrect += correct;
+  updated.totalQuestions += total;
+
+  const current = updated.categoryStats[category] ?? { correct: 0, total: 0 };
+  updated.categoryStats[category] = {
+    correct: current.correct + correct,
+    total: current.total + total,
+  };
+
+  const today = todayISODate();
+  if (updated.lastStudyDate !== today) {
+    updated.studyDays += 1;
+    updated.lastStudyDate = today;
+  }
+
+  saveProgress(updated);
+  return updated;
+};
+
 export const createQuizStore: StateCreator<QuizStoreState> = (set, get) => ({
   status: 'idle',
   currentSession: null,
   lastResult: null,
-  wrongQuestions: [],
+  progress: createInitialProgress(),
+  questions: [],
 
   startQuiz: ({ category, difficulty, questions }) => {
     if (!Array.isArray(questions) || questions.length === 0) {
@@ -165,46 +275,98 @@ export const createQuizStore: StateCreator<QuizStoreState> = (set, get) => ({
   },
 
   finishQuiz: () => {
-    const session = get().currentSession;
-    if (!session) {
-      return;
-    }
+    set((state) => {
+      const { currentSession } = state;
+      if (!currentSession) {
+        return state;
+      }
 
-    const completedAt = new Date();
-    const updatedSession: QuizSession = {
-      ...session,
-      completedAt,
-    };
+      const completedAt = new Date();
+      const updatedSession: QuizSession = {
+        ...currentSession,
+        completedAt,
+      };
 
-    const result = computeResult(updatedSession);
+      const result = computeResult(updatedSession);
+      const updatedProgress = applySessionResultToProgress(
+        state.progress,
+        updatedSession,
+        result
+      );
 
-    set({
-      status: 'completed',
-      currentSession: updatedSession,
-      lastResult: result,
+      return {
+        status: 'completed',
+        currentSession: updatedSession,
+        lastResult: result,
+        progress: updatedProgress,
+      };
     });
   },
 
-  recordResult: () => {
-    const session = get().currentSession;
-    if (!session) {
-      return null;
-    }
-
-    const result = computeResult(session);
-    set({ lastResult: result });
-    return result;
+  recordResult: (correct, total, category) => {
+    set((state) => ({
+      progress: recordCategoryProgress(state.progress, correct, total, category),
+    }));
   },
 
   addWrongQuestion: (questionId) => {
     set((state) => {
-      if (state.wrongQuestions.includes(questionId)) {
+      const progress = state.progress;
+      if (progress.wrongQuestions.includes(questionId)) {
         return state;
       }
+
+      const updated = cloneProgress(progress);
+      updated.wrongQuestions.push(questionId);
+      saveProgress(updated);
+      return { progress: updated };
+    });
+  },
+
+  loadQuestions: () => {
+    const loaded = getAllQuestions();
+    set({ questions: loaded });
+  },
+
+  addAIGeneratedQuestion: (question) => {
+    set((state) => {
+      const filtered = state.questions.filter((q) => q.id !== question.id);
       return {
-        wrongQuestions: [...state.wrongQuestions, questionId],
+        questions: [...filtered, question],
       };
     });
+  },
+
+  currentQuestion: () => {
+    const session = get().currentSession;
+    if (!session) {
+      return null;
+    }
+    return session.questions[session.currentIndex] ?? null;
+  },
+
+  score: () => {
+    const session = get().currentSession;
+    if (!session) {
+      return { correct: 0, total: 0 };
+    }
+
+    const correct = session.answers.reduce((count, answer, index) => {
+      if (answer === session.questions[index].correctAnswer) {
+        return count + 1;
+      }
+      return count;
+    }, 0);
+
+    return { correct, total: session.questions.length };
+  },
+
+  categoryAccuracy: (category) => {
+    const stats = get().progress.categoryStats[category];
+    if (!stats || stats.total === 0) {
+      return 0;
+    }
+    return Math.round((stats.correct / stats.total) * 100);
   },
 
   reset: () => {

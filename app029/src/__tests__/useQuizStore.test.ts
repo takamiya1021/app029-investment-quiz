@@ -24,6 +24,10 @@ const sampleQuestions: Question[] = [
   },
 ];
 
+beforeEach(() => {
+  localStorage.clear();
+});
+
 describe('useQuizStore', () => {
   it('starts a quiz and initialises session state', () => {
     const store = create(createQuizStore);
@@ -99,15 +103,94 @@ describe('useQuizStore', () => {
       totalQuestions: 2,
       correctAnswers: 1,
     });
+    expect(state.progress.totalQuizzes).toBe(1);
+    expect(state.progress.totalQuestions).toBe(2);
+    expect(state.progress.totalCorrect).toBe(1);
+    expect(state.progress.categoryStats['株式投資の基本']).toMatchObject({ correct: 1, total: 1 });
+    expect(state.progress.categoryStats['リスク管理']).toMatchObject({ correct: 0, total: 1 });
+    expect(state.progress.wrongQuestions).toContain('q2');
   });
 
-  it('collects wrong question IDs', () => {
+  it('collects wrong question IDs through explicit calls', () => {
     const store = create(createQuizStore);
     act(() => {
       store.getState().addWrongQuestion('q123');
       store.getState().addWrongQuestion('q456');
+      store.getState().addWrongQuestion('q123');
     });
 
-    expect(store.getState().wrongQuestions).toEqual(['q123', 'q456']);
+    expect(store.getState().progress.wrongQuestions).toEqual(['q123', 'q456']);
+  });
+
+  it('loads questions into state', () => {
+    const store = create(createQuizStore);
+    act(() => {
+      store.getState().loadQuestions();
+    });
+    expect(store.getState().questions.length).toBeGreaterThanOrEqual(50);
+  });
+
+  it('adds AI generated questions', () => {
+    const store = create(createQuizStore);
+    const aiQuestion: Question = {
+      id: 'ai-1',
+      category: 'AI',
+      difficulty: 'intermediate',
+      question: 'AI generated?',
+      choices: ['Yes', 'No', 'Maybe', 'N/A'],
+      correctAnswer: 0,
+      explanation: 'Sample',
+    };
+
+    act(() => {
+      store.getState().addAIGeneratedQuestion(aiQuestion);
+    });
+
+    expect(store.getState().questions.find((q) => q.id === 'ai-1')).toBeDefined();
+  });
+
+  it('returns the current question helper', () => {
+    const store = create(createQuizStore);
+    act(() => {
+      store.getState().startQuiz({
+        category: '株式投資の基本',
+        difficulty: 'beginner',
+        questions: sampleQuestions,
+      });
+    });
+
+    expect(store.getState().currentQuestion()?.id).toBe('q1');
+
+    act(() => {
+      store.getState().nextQuestion();
+    });
+
+    expect(store.getState().currentQuestion()?.id).toBe('q2');
+  });
+
+  it('returns score helper based on session answers', () => {
+    const store = create(createQuizStore);
+    act(() => {
+      store.getState().startQuiz({
+        category: '株式投資の基本',
+        difficulty: 'beginner',
+        questions: sampleQuestions,
+      });
+      store.getState().answerQuestion(0);
+      store.getState().nextQuestion();
+      store.getState().answerQuestion(0);
+    });
+
+    expect(store.getState().score()).toEqual({ correct: 1, total: 2 });
+  });
+
+  it('calculates category accuracy from progress stats', () => {
+    const store = create(createQuizStore);
+    act(() => {
+      store.getState().recordResult(4, 5, '株式投資の基本');
+    });
+
+    expect(store.getState().categoryAccuracy('株式投資の基本')).toBe(80);
+    expect(store.getState().categoryAccuracy('リスク管理')).toBe(0);
   });
 });
