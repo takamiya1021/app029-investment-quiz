@@ -19,23 +19,23 @@
 
 ### タスク
 
-#### 【 】0-1. Next.jsプロジェクト初期化（30分）
+#### 【x】0-1. Next.jsプロジェクト初期化（30分）
 - `npx create-next-app@latest app029 --typescript --tailwind --app`
 - **Red**: 動作確認テスト
 - **Green**: プロジェクト起動確認
 - **Refactor**: 不要ファイル削除
 
-#### 【 】0-2. Jestセットアップ（1時間）
+#### 【x】0-2. Jestセットアップ（1時間）
 - **Red**: Jest設定ファイルのテスト
 - **Green**: Jest, @testing-library/react インストール
 - **Refactor**: 設定最適化
 
-#### 【 】0-3. Playwrightセットアップ（1時間）
+#### 【x】0-3. Playwrightセットアップ（1時間）
 - **Red**: E2Eテストスケルトン
 - **Green**: Playwright インストール・設定
 - **Refactor**: テスト構成整理
 
-#### 【 】0-4. テスト実行確認（30分）
+#### 【x】0-4. テスト実行確認（30分）
 - **Red**: ダミーテスト作成
 - **Green**: テスト実行スクリプト設定
 - **Refactor**: テストコマンド整理
@@ -46,12 +46,12 @@
 
 ### タスク
 
-#### 【 】1-1. 型定義作成（1時間）
+#### 【x】1-1. 型定義作成（1時間）
 - **Red**: 型定義のテスト
 - **Green**: Question, QuizSession, UserProgress, AppSettings 定義
 - **Refactor**: 型の共通化
 
-#### 【 】1-2. Zustand Store実装（3時間）
+#### 【x】1-2. Zustand Store実装（3時間）
 - **Red**: Store各アクションのテスト
   ```typescript
   test('should start quiz', () => {
@@ -65,7 +65,7 @@
   - recordResult, addWrongQuestion
 - **Refactor**: 状態管理最適化
 
-#### 【 】1-3. LocalStorage統合（1時間）
+#### 【x】1-3. LocalStorage統合（1時間）
 - **Red**: 永続化テスト
 - **Green**: `lib/storage.ts` 実装
 - **Refactor**: デバウンス処理
@@ -79,12 +79,12 @@
 
 ### タスク
 
-#### 【 】2-1. 問題データ構造設計（1時間）
+#### 【x】2-1. 問題データ構造設計（1時間）
 - **Red**: データ読み込みテスト
 - **Green**: `data/questions.json` フォーマット設計
 - **Refactor**: スキーマ最適化
 
-#### 【 】2-2. カテゴリー別問題作成（4時間）
+#### 【x】2-2. カテゴリー別問題作成（4時間）
 - **Red**: 各カテゴリー問題テスト
 - **Green**: 50問作成
   - 株式投資の基本（10問）
@@ -95,7 +95,7 @@
   - 経済用語（8問）
 - **Refactor**: 問題内容レビュー・改善
 
-#### 【 】2-3. questionBankモジュール実装（1時間）
+#### 【x】2-3. questionBankモジュール実装（1時間）
 - **Red**: 問題読み込みテスト
 - **Green**: `lib/questionBank.ts` 実装
   - JSON読み込み
@@ -108,7 +108,7 @@
 
 ### タスク
 
-#### 【 】3-1. 問題選択ロジック（2時間）
+#### 【x】3-1. 問題選択ロジック（2時間）
 - **Red**: 問題選択テスト
 - **Green**: `lib/quizEngine.ts` 実装
   ```typescript
@@ -116,12 +116,12 @@
   ```
 - **Refactor**: シャッフルアルゴリズム最適化
 
-#### 【 】3-2. 正答判定ロジック（1時間）
+#### 【x】3-2. 正答判定ロジック（1時間）
 - **Red**: 正答判定テスト
 - **Green**: checkAnswer 実装
 - **Refactor**: ロジック最適化
 
-#### 【 】3-3. スコア計算（1時間）
+#### 【x】3-3. スコア計算（1時間）
 - **Red**: スコア計算テスト
 - **Green**: calculateScore 実装
 - **Refactor**: パーセンテージ計算

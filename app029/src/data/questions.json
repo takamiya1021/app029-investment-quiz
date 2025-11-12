@@ -1,0 +1,653 @@
+[
+  {
+    "id": "q001",
+    "category": "株式投資の基本",
+    "difficulty": "beginner",
+    "question": "株式を保有することで得られる主な利益の組み合わせはどれですか？",
+    "choices": [
+      "配当金と値上がり益",
+      "利息と家賃収入",
+      "給料と賞与",
+      "為替差益と利息"
+    ],
+    "correctAnswer": 0,
+    "explanation": "株主は企業から配当を受け取れるほか、株価上昇時の売却で値上がり益を得られます。"
+  },
+  {
+    "id": "q002",
+    "category": "株式投資の基本",
+    "difficulty": "beginner",
+    "question": "株価が高値と安値を繰り返す要因として最も一般的なのは何ですか？",
+    "choices": [
+      "需要と供給のバランス",
+      "国の税率の固定",
+      "為替手数料の設定",
+      "配当金の法的上限"
+    ],
+    "correctAnswer": 0,
+    "explanation": "市場での買い手と売り手の力関係が株価に反映され、需給バランスで変動します。"
+  },
+  {
+    "id": "q003",
+    "category": "株式投資の基本",
+    "difficulty": "beginner",
+    "question": "企業の利益から株主に分配される金額は何と呼ばれますか？",
+    "choices": ["配当", "利払い", "元本", "利確"],
+    "correctAnswer": 0,
+    "explanation": "企業は利益の一部を配当金として株主に還元します。"
+  },
+  {
+    "id": "q004",
+    "category": "株式投資の基本",
+    "difficulty": "beginner",
+    "question": "株式を長期保有することで受けられる自社商品などの特典を何と言いますか？",
+    "choices": ["株主優待", "優先債", "貸株料", "ポイント還元"],
+    "correctAnswer": 0,
+    "explanation": "特定の企業は株主に自社商品などを贈る制度を設けており、株主優待と呼ばれます。"
+  },
+  {
+    "id": "q005",
+    "category": "株式投資の基本",
+    "difficulty": "intermediate",
+    "question": "株価収益率（PER）が業界平均より大幅に高い場合の一般的な解釈は？",
+    "choices": [
+      "将来の成長が期待されている",
+      "配当が支払われていない",
+      "株価が割安である",
+      "自己資本比率が低い"
+    ],
+    "correctAnswer": 0,
+    "explanation": "PERが高い銘柄は、投資家が将来の利益成長を織り込んで株を高く評価している場合が多いです。"
+  },
+  {
+    "id": "q006",
+    "category": "株式投資の基本",
+    "difficulty": "intermediate",
+    "question": "株価純資産倍率（PBR）が1倍未満の場合、一般的にどのように受け止められますか？",
+    "choices": [
+      "純資産価値に比べ株価が割安",
+      "純資産価値に比べ株価が割高",
+      "営業利益率が高い",
+      "ROEが高い"
+    ],
+    "correctAnswer": 0,
+    "explanation": "PBRが1倍未満の場合、株価が企業の純資産価値を下回っていると判断され、割安と見られることがあります。"
+  },
+  {
+    "id": "q007",
+    "category": "株式投資の基本",
+    "difficulty": "intermediate",
+    "question": "1株当たり当期純利益を示す指標の略称はどれですか？",
+    "choices": ["EPS", "ROA", "EBIT", "DCF"],
+    "correctAnswer": 0,
+    "explanation": "EPS（Earnings Per Share）は1株あたりの純利益を示し、企業の収益性を測る指標です。"
+  },
+  {
+    "id": "q008",
+    "category": "株式投資の基本",
+    "difficulty": "advanced",
+    "question": "企業価値を将来キャッシュフローの現在価値合計で評価する手法は？",
+    "choices": ["DCF法", "モンテカルロ法", "回帰分析", "ベータ推定法"],
+    "correctAnswer": 0,
+    "explanation": "DCF法（Discounted Cash Flow）は将来のキャッシュフローを割り引いて企業価値を算出します。"
+  },
+  {
+    "id": "q009",
+    "category": "株式投資の基本",
+    "difficulty": "advanced",
+    "question": "利益成長率と配当政策から理論株価を導くモデルはどれですか？",
+    "choices": ["ゴードン成長モデル", "CAPM", "ブラック・ショールズモデル", "AHP"],
+    "correctAnswer": 0,
+    "explanation": "ゴードン成長モデルは配当金の成長率と割引率から株式の理論価格を求めます。"
+  },
+  {
+    "id": "q010",
+    "category": "株式投資の基本",
+    "difficulty": "advanced",
+    "question": "ベータ値が1.5の株式の特徴として適切なのはどれですか？",
+    "choices": [
+      "市場平均より価格変動が大きい",
+      "市場平均と同程度の変動",
+      "市場平均より変動が小さい",
+      "無リスク資産と同じ変動"
+    ],
+    "correctAnswer": 0,
+    "explanation": "ベータ値が1より大きいと、市場全体の変動に対して株価が大きく動く傾向を示します。"
+  },
+  {
+    "id": "q011",
+    "category": "債券投資の基本",
+    "difficulty": "beginner",
+    "question": "国が資金調達のために発行する債券は何と呼ばれますか？",
+    "choices": ["国債", "社債", "仕組債", "投資信託"],
+    "correctAnswer": 0,
+    "explanation": "国が発行する債券を国債と呼びます。信用度が高く、低リスク資産として認識されます。"
+  },
+  {
+    "id": "q012",
+    "category": "債券投資の基本",
+    "difficulty": "beginner",
+    "question": "債券の定期的に支払われる利息を示す言葉は？",
+    "choices": ["クーポン", "プレミアム", "配当", "レバレッジ"],
+    "correctAnswer": 0,
+    "explanation": "債券投資では利息をクーポンと呼びます。"
+  },
+  {
+    "id": "q013",
+    "category": "債券投資の基本",
+    "difficulty": "beginner",
+    "question": "債券利回りが上昇すると、既存債券の価格はどうなりますか？",
+    "choices": ["下落する", "上昇する", "変わらない", "金利と関係ない"],
+    "correctAnswer": 0,
+    "explanation": "利回りが上がると相対的に魅力が下がり、既発債券の価格は下落します。"
+  },
+  {
+    "id": "q014",
+    "category": "債券投資の基本",
+    "difficulty": "intermediate",
+    "question": "債券価格の金利感応度を表す指標はどれですか？",
+    "choices": ["デュレーション", "PER", "PBR", "EPS"],
+    "correctAnswer": 0,
+    "explanation": "デュレーションは金利変動に対する債券価格の感応度を測る指標です。"
+  },
+  {
+    "id": "q015",
+    "category": "債券投資の基本",
+    "difficulty": "intermediate",
+    "question": "信用度の低い債券で高い利回りを提供するものを何と呼びますか？",
+    "choices": ["ハイイールド債", "ゼロクーポン債", "国債", "地方債"],
+    "correctAnswer": 0,
+    "explanation": "信用リスクが高い分だけ高い利回りを期待できる債券はハイイールド債と呼ばれます。"
+  },
+  {
+    "id": "q016",
+    "category": "債券投資の基本",
+    "difficulty": "intermediate",
+    "question": "変動利付債券の特徴として正しいものはどれですか？",
+    "choices": [
+      "金利指標に連動して利率が見直される",
+      "利率が満期まで固定される",
+      "利払いが存在しない",
+      "元本が保証されない"
+    ],
+    "correctAnswer": 0,
+    "explanation": "変動利付債は、一定の指標金利に連動して利率が定期的に見直されます。"
+  },
+  {
+    "id": "q017",
+    "category": "債券投資の基本",
+    "difficulty": "advanced",
+    "question": "劣後債の主なリスク要因として適切なのはどれですか？",
+    "choices": [
+      "破綻時の弁済順位が低い",
+      "為替変動リスクが高い",
+      "利払いが変動する",
+      "満期が存在しない"
+    ],
+    "correctAnswer": 0,
+    "explanation": "劣後債は他の債権より弁済順位が低く、発行体が破綻すると元本回収が難しくなるリスクがあります。"
+  },
+  {
+    "id": "q018",
+    "category": "債券投資の基本",
+    "difficulty": "advanced",
+    "question": "イールドカーブが逆イールドとなった場合に懸念されることは？",
+    "choices": [
+      "景気後退",
+      "景気過熱",
+      "株価の急騰",
+      "物価上昇による金利上昇"
+    ],
+    "correctAnswer": 0,
+    "explanation": "短期金利が長期金利を上回る逆イールドは景気後退の予兆とされることが多いです。"
+  },
+  {
+    "id": "q019",
+    "category": "投資信託・ETF",
+    "difficulty": "beginner",
+    "question": "投資信託の運用管理にかかる年率の手数料を何と呼びますか？",
+    "choices": ["信託報酬", "販売手数料", "為替手数料", "スプレッド"],
+    "correctAnswer": 0,
+    "explanation": "投資信託の保有中に差し引かれる運用コストは信託報酬です。"
+  },
+  {
+    "id": "q020",
+    "category": "投資信託・ETF",
+    "difficulty": "beginner",
+    "question": "ETFの特徴として適切なのはどれですか？",
+    "choices": [
+      "証券取引所でリアルタイム売買できる",
+      "発行会社が利益を保証する",
+      "必ず毎月配当がある",
+      "元本が保証されている"
+    ],
+    "correctAnswer": 0,
+    "explanation": "ETFは上場投資信託で、株式と同様にリアルタイムで売買できるのが特徴です。"
+  },
+  {
+    "id": "q021",
+    "category": "投資信託・ETF",
+    "difficulty": "beginner",
+    "question": "投資信託を購入する際に最初にかかる費用を何と呼びますか？",
+    "choices": ["販売手数料", "信託財産留保額", "信託報酬", "信託財産"],
+    "correctAnswer": 0,
+    "explanation": "投資信託の買付時に支払う費用は販売手数料です（ノーロードの場合は無料）。"
+  },
+  {
+    "id": "q022",
+    "category": "投資信託・ETF",
+    "difficulty": "intermediate",
+    "question": "指数に連動する運用を行う投資信託を何と呼びますか？",
+    "choices": ["パッシブファンド", "アクティブファンド", "ヘッジファンド", "ボンドファンド"],
+    "correctAnswer": 0,
+    "explanation": "指数連動型の運用はパッシブ運用とも呼ばれ、市場平均に追随するのが目的です。"
+  },
+  {
+    "id": "q023",
+    "category": "投資信託・ETF",
+    "difficulty": "intermediate",
+    "question": "リバランスの目的として適切なのはどれですか？",
+    "choices": [
+      "目標資産配分を維持する",
+      "売買回数を増やす",
+      "信託報酬を下げる",
+      "税金を減らす"
+    ],
+    "correctAnswer": 0,
+    "explanation": "リバランスは資産配分の偏りを修正し、運用リスクを目標範囲に保つために行われます。"
+  },
+  {
+    "id": "q024",
+    "category": "投資信託・ETF",
+    "difficulty": "intermediate",
+    "question": "ETFの経費率が低いことによる利点は何ですか？",
+    "choices": [
+      "長期保有時のコスト負担が小さい",
+      "短期売買のスプレッドが狭い",
+      "価格が常に一定になる",
+      "配当利回りが保証される"
+    ],
+    "correctAnswer": 0,
+    "explanation": "経費率が低いと運用コストが抑えられ、長期的なリターンへの影響が小さくなります。"
+  },
+  {
+    "id": "q025",
+    "category": "投資信託・ETF",
+    "difficulty": "advanced",
+    "question": "ETFの分配金再投資により目指される効果はどれですか？",
+    "choices": [
+      "複利効果による資産成長",
+      "即時の現金収入の最大化",
+      "為替変動リスクの排除",
+      "信用リスクの削減"
+    ],
+    "correctAnswer": 0,
+    "explanation": "分配金を再投資することで複利効果を得られ、長期リターンの向上が期待できます。"
+  },
+  {
+    "id": "q026",
+    "category": "投資信託・ETF",
+    "difficulty": "advanced",
+    "question": "ETFが対象指数の価格乖離を小さく保てる理由として主要なのは？",
+    "choices": [
+      "裁定取引が働くため",
+      "信託報酬が高いため",
+      "分配金が固定されているため",
+      "発行体が価格を保証しているため"
+    ],
+    "correctAnswer": 0,
+    "explanation": "ETFは基準価額との乖離が生じると裁定取引が働き、価格が指数に近づきます。"
+  },
+  {
+    "id": "q027",
+    "category": "投資信託・ETF",
+    "difficulty": "advanced",
+    "question": "トータルリターンが意味するものはどれですか？",
+    "choices": [
+      "価格変動と分配金を合わせた収益",
+      "分配金のみの収益",
+      "為替差益のみの収益",
+      "手数料のみを差し引いた収益"
+    ],
+    "correctAnswer": 0,
+    "explanation": "トータルリターンは値上がり益と分配金収入を合わせた総合的な収益を表します。"
+  },
+  {
+    "id": "q028",
+    "category": "投資信託・ETF",
+    "difficulty": "advanced",
+    "question": "アクティブファンドのリスクとして一般的に当てはまるのは？",
+    "choices": [
+      "運用者の判断に依存するためベンチマークを下回る可能性がある",
+      "市場平均を常に上回る",
+      "パッシブファンドより手数料が低い",
+      "流動性がETFより高い"
+    ],
+    "correctAnswer": 0,
+    "explanation": "アクティブファンドは運用者の判断次第で成績が左右され、コストも高めでベンチマークを下回る場合があります。"
+  },
+  {
+    "id": "q029",
+    "category": "リスク管理",
+    "difficulty": "beginner",
+    "question": "複数の資産に分散投資する主な目的は何ですか？",
+    "choices": [
+      "リスクを低減するため",
+      "税金を減らすため",
+      "手数料を増やすため",
+      "利回りを保証するため"
+    ],
+    "correctAnswer": 0,
+    "explanation": "資産を分散することで、特定の資産が下落しても全体への影響を抑えられます。"
+  },
+  {
+    "id": "q030",
+    "category": "リスク管理",
+    "difficulty": "beginner",
+    "question": "リスクとリターンの関係を示す一般的な考え方はどれですか？",
+    "choices": [
+      "高いリターンには高いリスクが伴う",
+      "リスクが高いほどリターンは低い",
+      "リスクとリターンは無関係",
+      "リスクが低いほど損失が増える"
+    ],
+    "correctAnswer": 0,
+    "explanation": "投資の基本原則として、高いリターンを狙うほどリスクも高まる傾向があります。"
+  },
+  {
+    "id": "q031",
+    "category": "リスク管理",
+    "difficulty": "beginner",
+    "question": "投資で損失が出ても、あらかじめ決めた金額で売却する戦略は？",
+    "choices": ["損切り", "デイトレード", "リバランス", "ドルコスト平均法"],
+    "correctAnswer": 0,
+    "explanation": "損切りは、損失が一定額に達した時点で保有資産を売却して損失拡大を防ぐ方法です。"
+  },
+  {
+    "id": "q032",
+    "category": "リスク管理",
+    "difficulty": "intermediate",
+    "question": "ある資産の価格変動がポートフォリオ全体に与える影響を測る指標は？",
+    "choices": ["ベータ値", "PER", "配当利回り", "EPS"],
+    "correctAnswer": 0,
+    "explanation": "ベータ値は市場全体の変動との連動性を示し、ポートフォリオのリスク評価に使われます。"
+  },
+  {
+    "id": "q033",
+    "category": "リスク管理",
+    "difficulty": "intermediate",
+    "question": "ドルコスト平均法のメリットとして正しいものは？",
+    "choices": [
+      "価格変動リスクを平準化できる",
+      "常に最大の利益を得られる",
+      "手数料が無料になる",
+      "分配金が増える"
+    ],
+    "correctAnswer": 0,
+    "explanation": "定期的に同額を投資することで、平均取得単価が平準化され、価格変動リスクの軽減につながります。"
+  },
+  {
+    "id": "q034",
+    "category": "リスク管理",
+    "difficulty": "intermediate",
+    "question": "リバランスを実行するタイミングとして適切なものは？",
+    "choices": [
+      "目標配分から大きく乖離したとき",
+      "価格が上昇した直後",
+      "価格が下落した直後",
+      "毎日必ず実行する"
+    ],
+    "correctAnswer": 0,
+    "explanation": "目標とする資産配分から大きく外れた場合にリバランスを行い、リスクを調整します。"
+  },
+  {
+    "id": "q035",
+    "category": "リスク管理",
+    "difficulty": "advanced",
+    "question": "VaR（Value at Risk）が表すものはどれですか？",
+    "choices": [
+      "特定期間で想定される最大損失額",
+      "平均収益率",
+      "投資期間の長さ",
+      "手数料の総額"
+    ],
+    "correctAnswer": 0,
+    "explanation": "VaRは一定の信頼水準で予想される最大損失額を示すリスク指標です。"
+  },
+  {
+    "id": "q036",
+    "category": "リスク管理",
+    "difficulty": "advanced",
+    "question": "ヘッジ取引の目的として適切なのはどれですか？",
+    "choices": [
+      "既存ポジションのリスク軽減",
+      "手数料の削減",
+      "税金の回避",
+      "利回りの保証"
+    ],
+    "correctAnswer": 0,
+    "explanation": "ヘッジ取引は、先物やオプションを活用して主要ポジションの価格変動リスクを抑える手法です。"
+  },
+  {
+    "id": "q037",
+    "category": "リスク管理",
+    "difficulty": "advanced",
+    "question": "分散投資の効果を最も高める組み合わせの特徴は？",
+    "choices": [
+      "相関係数が低い資産同士",
+      "同じ動きをする資産",
+      "同じ業界の資産",
+      "同じ通貨建てのみ"
+    ],
+    "correctAnswer": 0,
+    "explanation": "相関が低い資産を組み合わせることで、同じ方向に動きづらくなりリスク低減効果が高まります。"
+  },
+  {
+    "id": "q038",
+    "category": "リスク管理",
+    "difficulty": "advanced",
+    "question": "ブラック・スワンの概念が意味するものはどれですか？",
+    "choices": [
+      "予測困難かつ重大な影響を与える事象",
+      "市場平均の動き",
+      "中央銀行の政策",
+      "短期金利の変動"
+    ],
+    "correctAnswer": 0,
+    "explanation": "ブラック・スワンは、想定外でインパクトの大きい出来事を指し、リスク管理で無視できない概念です。"
+  },
+  {
+    "id": "q039",
+    "category": "税金・制度",
+    "difficulty": "beginner",
+    "question": "日本で少額投資非課税制度として知られる制度は？",
+    "choices": ["NISA", "iDeCo", "401k", "ETF"],
+    "correctAnswer": 0,
+    "explanation": "NISAは一定額までの投資利益が非課税になる制度です。"
+  },
+  {
+    "id": "q040",
+    "category": "税金・制度",
+    "difficulty": "beginner",
+    "question": "iDeCoで拠出した掛金の税制上の扱いとして正しいのは？",
+    "choices": [
+      "全額が所得控除の対象となる",
+      "全額が課税対象となる",
+      "半分が課税される",
+      "ボーナス月だけ控除される"
+    ],
+    "correctAnswer": 0,
+    "explanation": "iDeCoの掛金は全額所得控除の対象となり、課税所得を減らせます。"
+  },
+  {
+    "id": "q041",
+    "category": "税金・制度",
+    "difficulty": "beginner",
+    "question": "株式の譲渡益にかかる日本の税率（復興特別所得税含む）はおおよそいくらですか？",
+    "choices": ["約20.315%", "約10%", "約30%", "約40%"],
+    "correctAnswer": 0,
+    "explanation": "株式や投資信託の譲渡益には約20.315%（所得税15%、住民税5%、復興税0.315%）が課税されます。"
+  },
+  {
+    "id": "q042",
+    "category": "税金・制度",
+    "difficulty": "intermediate",
+    "question": "特定口座（源泉徴収あり）を利用するメリットはどれですか？",
+    "choices": [
+      "確定申告を原則不要にできる",
+      "手数料が無料",
+      "配当が非課税になる",
+      "損失が発生しなくなる"
+    ],
+    "correctAnswer": 0,
+    "explanation": "特定口座（源泉徴収あり）では証券会社が年末調整まで行うため、通常は確定申告が不要になります。"
+  },
+  {
+    "id": "q043",
+    "category": "税金・制度",
+    "difficulty": "intermediate",
+    "question": "株式の損失を翌年以降の利益と相殺できる制度は？",
+    "choices": ["損失繰越控除", "寄附金控除", "住宅ローン控除", "医療費控除"],
+    "correctAnswer": 0,
+    "explanation": "損失繰越控除を利用すると、一定期間にわたり損失を翌年以降の利益から控除できます。"
+  },
+  {
+    "id": "q044",
+    "category": "税金・制度",
+    "difficulty": "intermediate",
+    "question": "NISA口座で得た利益が課税されるケースはどれですか？",
+    "choices": [
+      "ロールオーバー可能額を超えて移管した場合",
+      "売却益が出た場合",
+      "配当金を受け取った場合",
+      "再投資を行った場合"
+    ],
+    "correctAnswer": 0,
+    "explanation": "NISAの非課税枠を超える分を移管すると、その部分は課税対象の口座に移り課税されます。"
+  },
+  {
+    "id": "q045",
+    "category": "税金・制度",
+    "difficulty": "advanced",
+    "question": "iDeCoで60歳到達時に一時金として受け取る場合、適用できる控除は？",
+    "choices": [
+      "退職所得控除",
+      "給与所得控除",
+      "医療費控除",
+      "雑損控除"
+    ],
+    "correctAnswer": 0,
+    "explanation": "iDeCoの一時金受取は退職所得扱いとなり、退職所得控除の対象になります。"
+  },
+  {
+    "id": "q046",
+    "category": "税金・制度",
+    "difficulty": "advanced",
+    "question": "外国株式の配当を二重課税から守るための手段はどれですか？",
+    "choices": [
+      "外国税額控除",
+      "ふるさと納税",
+      "医療費控除",
+      "住宅ローン控除"
+    ],
+    "correctAnswer": 0,
+    "explanation": "外国株の配当には現地と日本で税金がかかるため、確定申告で外国税額控除を利用すると二重課税が調整されます。"
+  },
+  {
+    "id": "q047",
+    "category": "経済用語",
+    "difficulty": "beginner",
+    "question": "国内総生産を表す指標の略称は？",
+    "choices": ["GDP", "CPI", "PPI", "EPS"],
+    "correctAnswer": 0,
+    "explanation": "GDP（Gross Domestic Product）は国内で一定期間に生み出された付加価値の総額です。"
+  },
+  {
+    "id": "q048",
+    "category": "経済用語",
+    "difficulty": "beginner",
+    "question": "物価の上昇を指す言葉はどれですか？",
+    "choices": ["インフレ", "デフレ", "スタグフレーション", "リセッション"],
+    "correctAnswer": 0,
+    "explanation": "インフレは物価が継続的に上昇する状態を指します。"
+  },
+  {
+    "id": "q049",
+    "category": "経済用語",
+    "difficulty": "beginner",
+    "question": "中央銀行が行う金利引き下げ政策を何と呼びますか？",
+    "choices": ["金融緩和", "金融引き締め", "量的縮小", "財政出動"],
+    "correctAnswer": 0,
+    "explanation": "政策金利を下げるなど金融市場に資金を供給する施策は金融緩和です。"
+  },
+  {
+    "id": "q050",
+    "category": "経済用語",
+    "difficulty": "intermediate",
+    "question": "景気後退を示す指標として代表的なものはどれですか？",
+    "choices": [
+      "実質GDPのマイナス成長",
+      "株価指数の上昇",
+      "失業率の低下",
+      "物価の安定"
+    ],
+    "correctAnswer": 0,
+    "explanation": "実質GDPが連続してマイナス成長となると景気後退と判断されることが多いです。"
+  },
+  {
+    "id": "q051",
+    "category": "経済用語",
+    "difficulty": "intermediate",
+    "question": "購買力平価（PPP）が意味するのは何ですか？",
+    "choices": [
+      "各国の物価水準を調整した為替レート",
+      "中央銀行の政策金利",
+      "輸出総額",
+      "政府債務残高"
+    ],
+    "correctAnswer": 0,
+    "explanation": "PPPは各国の物価水準の差を考慮し、同じ購買力を持つ為替レートを表します。"
+  },
+  {
+    "id": "q052",
+    "category": "経済用語",
+    "difficulty": "intermediate",
+    "question": "フィリップス曲線が示す関係はどれですか？",
+    "choices": [
+      "失業率とインフレ率の逆相関",
+      "金利と株価の正相関",
+      "GDPと人口の比例関係",
+      "物価と為替の逆相関"
+    ],
+    "correctAnswer": 0,
+    "explanation": "フィリップス曲線は失業率が低いとインフレ率が高くなる傾向を示す理論です。"
+  },
+  {
+    "id": "q053",
+    "category": "経済用語",
+    "difficulty": "advanced",
+    "question": "量的緩和政策で中央銀行が主に購入する資産はどれですか？",
+    "choices": [
+      "国債などの安全資産",
+      "株式のみ",
+      "原油先物",
+      "不動産"
+    ],
+    "correctAnswer": 0,
+    "explanation": "量的緩和では中央銀行が国債などを大量に購入し、市場に資金を供給します。"
+  },
+  {
+    "id": "q054",
+    "category": "経済用語",
+    "difficulty": "advanced",
+    "question": "スタグフレーションとはどのような状態ですか？",
+    "choices": [
+      "景気停滞と物価上昇が同時に起こる",
+      "景気拡大と物価下落が同時に起こる",
+      "失業率が低下する",
+      "財政赤字が縮小する"
+    ],
+    "correctAnswer": 0,
+    "explanation": "スタグフレーションは景気が停滞しているにもかかわらず物価が上昇する厳しい経済状況を指します。"
+  }
+]
