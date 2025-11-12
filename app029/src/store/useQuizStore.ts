@@ -48,6 +48,7 @@ export interface QuizStoreState {
   currentQuestion: () => Question | null;
   score: () => { correct: number; total: number };
   categoryAccuracy: (category: string) => number;
+  getWrongQuestions: () => Question[];
   reset: () => void;
 }
 
@@ -345,13 +346,13 @@ export const createQuizStore: StateCreator<QuizStoreState> = (set, get) => ({
     return session.questions[session.currentIndex] ?? null;
   },
 
-  score: () => {
+  score: (): { correct: number; total: number } => {
     const session = get().currentSession;
     if (!session) {
       return { correct: 0, total: 0 };
     }
 
-    const correct = session.answers.reduce((count, answer, index) => {
+    const correct = session.answers.reduce<number>((count, answer, index) => {
       if (answer === session.questions[index].correctAnswer) {
         return count + 1;
       }
@@ -367,6 +368,27 @@ export const createQuizStore: StateCreator<QuizStoreState> = (set, get) => ({
       return 0;
     }
     return Math.round((stats.correct / stats.total) * 100);
+  },
+
+  getWrongQuestions: () => {
+    const { progress, questions } = get();
+    const wrongIds = progress.wrongQuestions;
+
+    if (wrongIds.length === 0) {
+      return [];
+    }
+
+    const questionMap = new Map(questions.map((q) => [q.id, q]));
+    const result: Question[] = [];
+
+    for (const id of wrongIds) {
+      const question = questionMap.get(id);
+      if (question) {
+        result.push(question);
+      }
+    }
+
+    return result;
   },
 
   reset: () => {

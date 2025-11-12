@@ -91,6 +91,48 @@ export const calculateScore = (
   };
 };
 
+export const generateReviewQuiz = (
+  wrongQuestions: Question[],
+  count: number
+): Question[] => {
+  if (wrongQuestions.length === 0) {
+    return [];
+  }
+
+  if (wrongQuestions.length <= count) {
+    return [...wrongQuestions];
+  }
+
+  // Fisher-Yates shuffle to pick random questions
+  const shuffled = [...wrongQuestions];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled.slice(0, count);
+};
+
+export const shuffleChoices = (question: Question): Question => {
+  const choices = [...question.choices];
+  const correctAnswerText = choices[question.correctAnswer];
+
+  // Fisher-Yates shuffle
+  for (let i = choices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [choices[i], choices[j]] = [choices[j], choices[i]];
+  }
+
+  // Find new index of correct answer
+  const newCorrectAnswer = choices.indexOf(correctAnswerText);
+
+  return {
+    ...question,
+    choices: choices as [string, string, string, string],
+    correctAnswer: newCorrectAnswer,
+  };
+};
+
 export const __testing = {
   DEFAULT_QUIZ_COUNT,
 };

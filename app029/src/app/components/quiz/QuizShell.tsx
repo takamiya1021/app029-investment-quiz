@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useQuizStore } from '@/store/useQuizStore';
-import { generateQuiz } from '@/lib/quizEngine';
+import { generateQuiz, generateReviewQuiz } from '@/lib/quizEngine';
 import { getAvailableCategories, getQuestionsByCategory } from '@/lib/questionBank';
 import type { Difficulty } from '@/lib/types';
 import ExplanationCard from './ExplanationCard';
@@ -42,6 +42,10 @@ export default function QuizShell() {
 function CategoryView() {
   const startQuiz = useQuizStore((state) => state.startQuiz);
   const categoryAccuracy = useQuizStore((state) => state.categoryAccuracy);
+  const getWrongQuestions = useQuizStore((state) => state.getWrongQuestions);
+
+  const wrongQuestions = getWrongQuestions();
+  const hasWrongQuestions = wrongQuestions.length > 0;
 
   const handleStart = (category: string) => {
     const available = getQuestionsByCategory(category).length;
@@ -74,6 +78,16 @@ function CategoryView() {
     });
   };
 
+  const handleReviewStart = () => {
+    const reviewCount = Math.min(10, wrongQuestions.length);
+    const quiz = generateReviewQuiz(wrongQuestions, reviewCount);
+    startQuiz({
+      category: '復習モード',
+      difficulty: DEFAULT_DIFFICULTY,
+      questions: quiz,
+    });
+  };
+
   return (
     <section className="min-h-screen bg-slate-950 px-6 py-16 text-white">
       <div className="mx-auto flex max-w-5xl flex-col gap-8">
@@ -91,6 +105,15 @@ function CategoryView() {
             >
               ランダム10問
             </button>
+            {hasWrongQuestions && (
+              <button
+                type="button"
+                onClick={handleReviewStart}
+                className="rounded-full border border-orange-400/40 bg-orange-400/10 px-5 py-3 text-sm font-semibold text-orange-300 transition hover:border-orange-400/60 hover:bg-orange-400/20"
+              >
+                復習モード（{wrongQuestions.length}問）
+              </button>
+            )}
             <Link
               href="/"
               className="rounded-full border border-white/10 px-5 py-3 text-sm text-white/70 transition hover:border-white/40"
