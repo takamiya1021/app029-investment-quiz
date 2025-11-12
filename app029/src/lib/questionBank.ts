@@ -1,7 +1,12 @@
 import questions from '@/data/questions.json';
 import { Difficulty, Question } from '@/lib/types';
+import { validateQuestionBank } from '@/lib/questionValidation';
 
-const BASE_QUESTIONS: Question[] = (questions as Question[]).map((question) => ({
+// 問題データをバリデーション
+const loadedQuestions = questions as Question[];
+validateQuestionBank(loadedQuestions);
+
+const BASE_QUESTIONS: Question[] = loadedQuestions.map((question) => ({
   ...question,
   choices: [...question.choices],
 }));

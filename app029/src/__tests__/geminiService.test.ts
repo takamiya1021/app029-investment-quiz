@@ -3,7 +3,7 @@ import {
   enhanceExplanation,
   analyzeWeakness,
 } from '@/lib/geminiService';
-import type { Question, Difficulty, UserProgress } from '@/lib/types';
+import type { Question, UserProgress } from '@/lib/types';
 
 // Mock the Gemini API calls
 const mockFetch = jest.fn();
@@ -28,10 +28,10 @@ describe('geminiService', () => {
                       id: 'ai-1',
                       category: '株式投資の基本',
                       difficulty: 'beginner',
-                      question: 'AIが生成した問題',
+                      question: 'AIが生成した投資に関するテスト問題',
                       choices: ['選択肢1', '選択肢2', '選択肢3', '選択肢4'],
                       correctAnswer: 0,
-                      explanation: '解説',
+                      explanation: 'この問題の解説テキストです',
                     },
                   ]),
                 },
@@ -53,7 +53,7 @@ describe('geminiService', () => {
       });
 
       expect(questions).toHaveLength(1);
-      expect(questions[0].question).toBe('AIが生成した問題');
+      expect(questions[0].question).toBe('AIが生成した投資に関するテスト問題');
       expect(questions[0].choices).toHaveLength(4);
     });
 
@@ -83,6 +83,263 @@ describe('geminiService', () => {
           count: 1,
         })
       ).rejects.toThrow();
+    });
+
+    it('handles rate limit errors with retry', async () => {
+      const mockResponse = {
+        candidates: [
+          {
+            content: {
+              parts: [
+                {
+                  text: JSON.stringify([
+                    {
+                      id: 'ai-1',
+                      category: '株式投資の基本',
+                      difficulty: 'beginner',
+                      question: 'リトライ後に成功した投資問題',
+                      choices: ['選択肢A', '選択肢B', '選択肢C', '選択肢D'],
+                      correctAnswer: 0,
+                      explanation: 'この問題の解説テキスト',
+                    },
+                  ]),
+                },
+              ],
+            },
+          },
+        ],
+      };
+
+      // First call returns 429, second call succeeds
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 429,
+          statusText: 'Too Many Requests',
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse,
+        });
+
+      const questions = await generateQuestions({
+        category: '株式投資の基本',
+        difficulty: 'beginner',
+        count: 1,
+      });
+
+      expect(questions).toHaveLength(1);
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    it(
+      'throws error after max retries',
+      async () => {
+        mockFetch.mockResolvedValue({
+          ok: false,
+          status: 429,
+          statusText: 'Too Many Requests',
+        });
+
+        await expect(
+          generateQuestions({
+            category: '株式投資の基本',
+            difficulty: 'beginner',
+            count: 1,
+          })
+        ).rejects.toThrow('Max retries reached');
+
+        // Verify that it tried multiple times (initial + 3 retries = 4 attempts)
+        expect(mockFetch).toHaveBeenCalled();
+      },
+      10000
+    ); // 10 second timeout for retry logic
+
+    it('handles network errors', async () => {
+      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(
+        generateQuestions({
+          category: '株式投資の基本',
+          difficulty: 'beginner',
+          count: 1,
+        })
+      ).rejects.toThrow('Network error');
+    });
+
+    it('handles invalid JSON response', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: 'これは無効なJSON',
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+      });
+
+      await expect(
+        generateQuestions({
+          category: '株式投資の基本',
+          difficulty: 'beginner',
+          count: 1,
+        })
+      ).rejects.toThrow();
+    });
+
+    it('detects duplicate choices', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: JSON.stringify([
+                      {
+                        id: 'ai-1',
+                        category: '株式投資の基本',
+                        difficulty: 'beginner',
+                        question: 'テスト問題',
+                        choices: ['選択肢A', '選択肢A', '選択肢B', '選択肢C'], // 重複
+                        correctAnswer: 0,
+                        explanation: '解説テキスト',
+                      },
+                    ]),
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+      });
+
+      await expect(
+        generateQuestions({
+          category: '株式投資の基本',
+          difficulty: 'beginner',
+          count: 1,
+        })
+      ).rejects.toThrow('Duplicate choices detected');
+    });
+
+    it('detects too short choices', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: JSON.stringify([
+                      {
+                        id: 'ai-1',
+                        category: '株式投資の基本',
+                        difficulty: 'beginner',
+                        question: 'テスト問題',
+                        choices: ['A', '長い選択肢B', '長い選択肢C', '長い選択肢D'], // 短すぎる
+                        correctAnswer: 0,
+                        explanation: '解説テキスト',
+                      },
+                    ]),
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+      });
+
+      await expect(
+        generateQuestions({
+          category: '株式投資の基本',
+          difficulty: 'beginner',
+          count: 1,
+        })
+      ).rejects.toThrow('Choice 0 is too short');
+    });
+
+    it('detects too short question text', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: JSON.stringify([
+                      {
+                        id: 'ai-1',
+                        category: '株式投資の基本',
+                        difficulty: 'beginner',
+                        question: '短い', // 短すぎる
+                        choices: ['選択肢A', '選択肢B', '選択肢C', '選択肢D'],
+                        correctAnswer: 0,
+                        explanation: '解説テキスト',
+                      },
+                    ]),
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+      });
+
+      await expect(
+        generateQuestions({
+          category: '株式投資の基本',
+          difficulty: 'beginner',
+          count: 1,
+        })
+      ).rejects.toThrow('Question text is too short');
+    });
+
+    it('detects too short explanation', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: JSON.stringify([
+                      {
+                        id: 'ai-1',
+                        category: '株式投資の基本',
+                        difficulty: 'beginner',
+                        question: 'これは十分に長いテスト問題です',
+                        choices: ['選択肢A', '選択肢B', '選択肢C', '選択肢D'],
+                        correctAnswer: 0,
+                        explanation: '短い', // 短すぎる
+                      },
+                    ]),
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+      });
+
+      await expect(
+        generateQuestions({
+          category: '株式投資の基本',
+          difficulty: 'beginner',
+          count: 1,
+        })
+      ).rejects.toThrow('Explanation is too short');
     });
   });
 

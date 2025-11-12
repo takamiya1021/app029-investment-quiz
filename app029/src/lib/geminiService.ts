@@ -1,4 +1,5 @@
 import type { Question, Difficulty, UserProgress } from './types';
+import { validateQuestion } from './questionValidation';
 
 const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
@@ -33,45 +34,71 @@ const getApiKey = (): string => {
   return apiKey;
 };
 
-const callGeminiApi = async (prompt: string): Promise<string> => {
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
+const callGeminiApi = async (
+  prompt: string,
+  maxRetries: number = 3,
+  retryCount: number = 0
+): Promise<string> => {
   const apiKey = getApiKey();
   const url = `${GEMINI_API_ENDPOINT}?key=${apiKey}`;
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [
-            {
-              text: prompt,
-            },
-          ],
-        },
-      ],
-      generationConfig: {
-        temperature: 0.7,
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 2048,
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    }),
-  });
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 2048,
+        },
+      }),
+    });
 
-  if (!response.ok) {
-    throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
+    if (!response.ok) {
+      // レート制限エラーの場合はリトライ
+      if (response.status === 429 && retryCount < maxRetries) {
+        const backoffMs = Math.pow(2, retryCount) * 1000; // 指数バックオフ: 1s, 2s, 4s
+        await sleep(backoffMs);
+        return callGeminiApi(prompt, maxRetries, retryCount + 1);
+      }
+
+      // 最大リトライ回数に達した場合
+      if (retryCount >= maxRetries) {
+        throw new Error('Max retries reached');
+      }
+
+      throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data: GeminiResponse = await response.json();
+
+    if (!data.candidates || data.candidates.length === 0) {
+      throw new Error('No response from Gemini API');
+    }
+
+    return data.candidates[0].content.parts[0].text;
+  } catch (error) {
+    // ネットワークエラーの場合
+    if (error instanceof Error && error.message !== 'Max retries reached') {
+      throw error;
+    }
+    throw error;
   }
-
-  const data: GeminiResponse = await response.json();
-
-  if (!data.candidates || data.candidates.length === 0) {
-    throw new Error('No response from Gemini API');
-  }
-
-  return data.candidates[0].content.parts[0].text;
 };
 
 export const generateQuestions = async ({
@@ -121,8 +148,9 @@ JSONのみを返してください。説明文は不要です。`;
 
   const questions: Question[] = JSON.parse(jsonText);
 
-  // Validate generated questions
+  // Validate and enhance generated questions
   questions.forEach((q, index) => {
+    // デフォルト値の設定
     if (!q.id) {
       q.id = `ai-${category}-${difficulty}-${Date.now()}-${index}`;
     }
@@ -132,11 +160,37 @@ JSONのみを返してください。説明文は不要です。`;
     if (!q.difficulty) {
       q.difficulty = difficulty;
     }
-    if (!Array.isArray(q.choices) || q.choices.length !== 4) {
-      throw new Error(`Invalid question format: choices must be an array of 4 items`);
+
+    // 基本バリデーション
+    validateQuestion(q);
+
+    // 品質チェック: 選択肢の重複チェック
+    const uniqueChoices = new Set(q.choices.map((c) => c.trim().toLowerCase()));
+    if (uniqueChoices.size !== q.choices.length) {
+      throw new Error(`Question ID ${q.id}: Duplicate choices detected`);
     }
-    if (typeof q.correctAnswer !== 'number' || q.correctAnswer < 0 || q.correctAnswer > 3) {
-      throw new Error(`Invalid question format: correctAnswer must be 0-3`);
+
+    // 品質チェック: 選択肢の長さチェック（あまりに短い or 長い選択肢は不自然）
+    q.choices.forEach((choice, idx) => {
+      if (choice.length < 2) {
+        throw new Error(`Question ID ${q.id}: Choice ${idx} is too short`);
+      }
+      if (choice.length > 200) {
+        throw new Error(`Question ID ${q.id}: Choice ${idx} is too long`);
+      }
+    });
+
+    // 品質チェック: 問題文の長さチェック
+    if (q.question.length < 10) {
+      throw new Error(`Question ID ${q.id}: Question text is too short`);
+    }
+    if (q.question.length > 500) {
+      throw new Error(`Question ID ${q.id}: Question text is too long`);
+    }
+
+    // 品質チェック: 解説の長さチェック
+    if (q.explanation.length < 10) {
+      throw new Error(`Question ID ${q.id}: Explanation is too short`);
     }
   });
 
