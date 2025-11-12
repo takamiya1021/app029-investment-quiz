@@ -193,4 +193,52 @@ describe('useQuizStore', () => {
     expect(store.getState().categoryAccuracy('株式投資の基本')).toBe(80);
     expect(store.getState().categoryAccuracy('リスク管理')).toBe(0);
   });
+
+  it('retrieves wrong questions for review mode', () => {
+    const store = create(createQuizStore);
+    act(() => {
+      // Add sample questions to the store's questions state
+      sampleQuestions.forEach((q) => {
+        store.getState().addAIGeneratedQuestion(q);
+      });
+
+      // Start a quiz and answer incorrectly
+      store.getState().startQuiz({
+        category: '株式投資の基本',
+        difficulty: 'beginner',
+        questions: sampleQuestions,
+      });
+      store.getState().answerQuestion(0); // correct for q1
+      store.getState().nextQuestion();
+      store.getState().answerQuestion(0); // incorrect for q2
+      store.getState().finishQuiz();
+    });
+
+    const wrongQuestions = store.getState().getWrongQuestions();
+    expect(wrongQuestions).toBeDefined();
+    expect(wrongQuestions.length).toBeGreaterThan(0);
+    expect(wrongQuestions.some((q) => q.id === 'q2')).toBe(true);
+  });
+
+  it('returns empty array when no wrong questions exist', () => {
+    const store = create(createQuizStore);
+    act(() => {
+      store.getState().loadQuestions();
+    });
+
+    const wrongQuestions = store.getState().getWrongQuestions();
+    expect(wrongQuestions).toEqual([]);
+  });
+
+  it('filters out questions that no longer exist in question bank', () => {
+    const store = create(createQuizStore);
+    act(() => {
+      // Manually set a wrong question ID that doesn't exist
+      store.getState().addWrongQuestion('non-existent-id');
+      store.getState().loadQuestions();
+    });
+
+    const wrongQuestions = store.getState().getWrongQuestions();
+    expect(wrongQuestions.every((q) => q.id !== 'non-existent-id')).toBe(true);
+  });
 });

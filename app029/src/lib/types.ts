@@ -186,7 +186,7 @@ export const isUserProgress = (value: unknown): value is UserProgress => {
   if (!isObject(categoryStats)) return false;
   if (!Object.values(categoryStats).every(isCategoryStat)) return false;
 
-  const aggregated = Object.values(categoryStats).reduce(
+  const aggregated = (Object.values(categoryStats) as CategoryStat[]).reduce<{ correct: number; total: number }>(
     (acc, stat) => ({
       correct: acc.correct + stat.correct,
       total: acc.total + stat.total,

@@ -1,0 +1,208 @@
+import type { Question, Difficulty, UserProgress } from './types';
+
+const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+
+interface GeminiResponse {
+  candidates: Array<{
+    content: {
+      parts: Array<{
+        text: string;
+      }>;
+    };
+  }>;
+}
+
+interface GenerateQuestionsOptions {
+  category: string;
+  difficulty: Difficulty;
+  count: number;
+}
+
+interface WeaknessAnalysis {
+  weakestCategory: string;
+  analysis: string;
+  advice: string;
+  recommendedTopics: string[];
+}
+
+const getApiKey = (): string => {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY is not configured');
+  }
+  return apiKey;
+};
+
+const callGeminiApi = async (prompt: string): Promise<string> => {
+  const apiKey = getApiKey();
+  const url = `${GEMINI_API_ENDPOINT}?key=${apiKey}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [
+            {
+              text: prompt,
+            },
+          ],
+        },
+      ],
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 2048,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data: GeminiResponse = await response.json();
+
+  if (!data.candidates || data.candidates.length === 0) {
+    throw new Error('No response from Gemini API');
+  }
+
+  return data.candidates[0].content.parts[0].text;
+};
+
+export const generateQuestions = async ({
+  category,
+  difficulty,
+  count,
+}: GenerateQuestionsOptions): Promise<Question[]> => {
+  const difficultyLabel: Record<Difficulty, string> = {
+    beginner: '初級',
+    intermediate: '中級',
+    advanced: '上級',
+  };
+
+  const prompt = `あなたは投資教育の専門家です。以下の条件で投資クイズの問題を${count}問生成してください。
+
+条件:
+- カテゴリー: ${category}
+- 難易度: ${difficultyLabel[difficulty]}
+- 形式: 4択問題
+- 各問題には解説を含めること
+- 問題は教育目的であり、投資助言ではないことを前提とする
+
+JSONフォーマットで出力してください:
+[
+  {
+    "id": "ai-generated-unique-id",
+    "category": "${category}",
+    "difficulty": "${difficulty}",
+    "question": "問題文",
+    "choices": ["選択肢1", "選択肢2", "選択肢3", "選択肢4"],
+    "correctAnswer": 0,
+    "explanation": "解説文"
+  }
+]
+
+JSONのみを返してください。説明文は不要です。`;
+
+  const responseText = await callGeminiApi(prompt);
+
+  // Extract JSON from response (remove markdown code blocks if present)
+  let jsonText = responseText.trim();
+  if (jsonText.startsWith('```json')) {
+    jsonText = jsonText.replace(/```json\n?/, '').replace(/\n?```$/, '');
+  } else if (jsonText.startsWith('```')) {
+    jsonText = jsonText.replace(/```\n?/, '').replace(/\n?```$/, '');
+  }
+
+  const questions: Question[] = JSON.parse(jsonText);
+
+  // Validate generated questions
+  questions.forEach((q, index) => {
+    if (!q.id) {
+      q.id = `ai-${category}-${difficulty}-${Date.now()}-${index}`;
+    }
+    if (!q.category) {
+      q.category = category;
+    }
+    if (!q.difficulty) {
+      q.difficulty = difficulty;
+    }
+    if (!Array.isArray(q.choices) || q.choices.length !== 4) {
+      throw new Error(`Invalid question format: choices must be an array of 4 items`);
+    }
+    if (typeof q.correctAnswer !== 'number' || q.correctAnswer < 0 || q.correctAnswer > 3) {
+      throw new Error(`Invalid question format: correctAnswer must be 0-3`);
+    }
+  });
+
+  return questions;
+};
+
+export const enhanceExplanation = async (question: Question): Promise<string> => {
+  const prompt = `以下の投資クイズの解説を、初心者にもわかりやすく詳細に書き換えてください。
+専門用語には補足説明を加え、具体例を用いて説明してください。
+
+問題: ${question.question}
+正解: ${question.choices[question.correctAnswer]}
+現在の解説: ${question.explanation}
+
+より詳しく、わかりやすい解説を作成してください。マークダウン形式で構いません。`;
+
+  const enhancedText = await callGeminiApi(prompt);
+  return enhancedText.trim();
+};
+
+export const analyzeWeakness = async (progress: UserProgress): Promise<WeaknessAnalysis> => {
+  const categoryStats = Object.entries(progress.categoryStats)
+    .map(([category, stats]) => ({
+      category,
+      accuracy: stats.total === 0 ? 0 : (stats.correct / stats.total) * 100,
+      correct: stats.correct,
+      total: stats.total,
+    }))
+    .sort((a, b) => a.accuracy - b.accuracy);
+
+  const statsText = categoryStats
+    .map((s) => `${s.category}: ${s.correct}/${s.total}問正解 (${Math.round(s.accuracy)}%)`)
+    .join('\n');
+
+  const prompt = `あなたは投資教育の専門家です。以下のユーザーの学習データを分析し、弱点と学習アドバイスを提供してください。
+
+学習統計:
+- 総クイズ受験回数: ${progress.totalQuizzes}回
+- 総正答数: ${progress.totalCorrect}/${progress.totalQuestions}問
+- 累計正答率: ${Math.round((progress.totalCorrect / progress.totalQuestions) * 100)}%
+- 学習日数: ${progress.studyDays}日
+- 間違えた問題数: ${progress.wrongQuestions.length}問
+
+カテゴリー別成績:
+${statsText}
+
+以下のJSON形式で分析結果を返してください:
+{
+  "weakestCategory": "最も正答率が低いカテゴリー名",
+  "analysis": "弱点の詳細分析（2-3文）",
+  "advice": "具体的な学習アドバイス（3-4文）",
+  "recommendedTopics": ["学習すべきトピック1", "トピック2", "トピック3"]
+}
+
+JSONのみを返してください。説明文は不要です。`;
+
+  const responseText = await callGeminiApi(prompt);
+
+  // Extract JSON from response
+  let jsonText = responseText.trim();
+  if (jsonText.startsWith('```json')) {
+    jsonText = jsonText.replace(/```json\n?/, '').replace(/\n?```$/, '');
+  } else if (jsonText.startsWith('```')) {
+    jsonText = jsonText.replace(/```\n?/, '').replace(/\n?```$/, '');
+  }
+
+  const analysis: WeaknessAnalysis = JSON.parse(jsonText);
+  return analysis;
+};
