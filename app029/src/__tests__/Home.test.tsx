@@ -28,7 +28,12 @@ describe('Home', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseQuizStore.mockReturnValue({ progress: mockProgress });
+    mockUseQuizStore.mockImplementation((selector) => {
+      const store = {
+        progress: mockProgress,
+      };
+      return selector(store);
+    });
   });
 
   it('renders home page', () => {
