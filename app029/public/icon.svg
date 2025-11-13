@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#3b82f6" rx="64"/>
+
+  <!-- Chart/Graph Icon representing investment -->
+  <g fill="white">
+    <!-- Rising trend line -->
+    <path d="M 100 350 L 180 280 L 260 320 L 340 200 L 412 160"
+          stroke="white" stroke-width="24" fill="none"
+          stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Chart bars -->
+    <rect x="80" y="280" width="40" height="100" rx="8"/>
+    <rect x="160" y="240" width="40" height="140" rx="8"/>
+    <rect x="240" y="260" width="40" height="120" rx="8"/>
+    <rect x="320" y="180" width="40" height="200" rx="8"/>
+    <rect x="400" y="140" width="40" height="240" rx="8"/>
+
+    <!-- Yen symbol -->
+    <g transform="translate(380, 60)">
+      <text x="0" y="0" font-size="72" font-weight="bold" fill="white">¥</text>
+    </g>
+  </g>
+
+  <!-- Question mark badge -->
+  <circle cx="140" cy="100" r="50" fill="#fbbf24"/>
+  <text x="140" y="130" font-size="64" font-weight="bold" fill="white" text-anchor="middle">?</text>
+</svg>
