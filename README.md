@@ -33,7 +33,7 @@
 ```bash
 # リポジトリをクローン
 git clone <repository-url>
-cd app029
+cd app029-investment-quiz/app029
 
 # 依存パッケージをインストール
 npm install
