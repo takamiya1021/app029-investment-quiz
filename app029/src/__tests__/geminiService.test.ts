@@ -2,8 +2,10 @@ import {
   generateQuestions,
   enhanceExplanation,
   analyzeWeakness,
+  getApiKey,
 } from '@/lib/geminiService';
 import type { Question, UserProgress } from '@/lib/types';
+import { saveApiKey, clearApiKey } from '@/lib/apiKeyManager';
 
 // Mock the Gemini API calls
 const mockFetch = jest.fn();
@@ -59,6 +61,7 @@ describe('geminiService', () => {
 
     it('throws error when API key is missing', async () => {
       delete process.env.GEMINI_API_KEY;
+      clearApiKey(); // ローカルストレージもクリア
 
       await expect(
         generateQuestions({
@@ -66,7 +69,7 @@ describe('geminiService', () => {
           difficulty: 'beginner',
           count: 1,
         })
-      ).rejects.toThrow('GEMINI_API_KEY is not configured');
+      ).rejects.toThrow('Gemini API key is not configured');
     });
 
     it('handles API errors gracefully', async () => {
@@ -427,6 +430,59 @@ describe('geminiService', () => {
       expect(analysis.weakestCategory).toBe('リスク管理');
       expect(analysis.advice).toBeDefined();
       expect(analysis.recommendedTopics).toBeInstanceOf(Array);
+    });
+  });
+
+  describe('getApiKey', () => {
+    beforeEach(() => {
+      // テスト前にlocalStorageをクリア
+      clearApiKey();
+      delete process.env.GEMINI_API_KEY;
+      delete process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    });
+
+    it('should prioritize localStorage over environment variables', () => {
+      const localKey = 'local-storage-key';
+      const envKey = 'env-var-key';
+
+      saveApiKey(localKey);
+      process.env.GEMINI_API_KEY = envKey;
+
+      const key = getApiKey();
+      expect(key).toBe(localKey);
+    });
+
+    it('should fallback to GEMINI_API_KEY if localStorage is empty', () => {
+      const envKey = 'gemini-api-key-from-env';
+      process.env.GEMINI_API_KEY = envKey;
+
+      const key = getApiKey();
+      expect(key).toBe(envKey);
+    });
+
+    it('should fallback to NEXT_PUBLIC_GEMINI_API_KEY if GEMINI_API_KEY is not set', () => {
+      const envKey = 'next-public-gemini-key';
+      process.env.NEXT_PUBLIC_GEMINI_API_KEY = envKey;
+
+      const key = getApiKey();
+      expect(key).toBe(envKey);
+    });
+
+    it('should throw error if no API key is configured', () => {
+      expect(() => getApiKey()).toThrow(
+        'Gemini API key is not configured. Please set it in Settings or use GEMINI_API_KEY environment variable.'
+      );
+    });
+
+    it('should use localStorage key even if env vars are set', () => {
+      const localKey = 'priority-local-key';
+
+      saveApiKey(localKey);
+      process.env.GEMINI_API_KEY = 'env-key-1';
+      process.env.NEXT_PUBLIC_GEMINI_API_KEY = 'env-key-2';
+
+      const key = getApiKey();
+      expect(key).toBe(localKey);
     });
   });
 });

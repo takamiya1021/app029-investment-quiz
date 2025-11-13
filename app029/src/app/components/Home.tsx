@@ -72,6 +72,12 @@ export default function Home() {
             >
               カテゴリー別の弱点を見る
             </Link>
+            <Link
+              href="/settings"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white/90 transition hover:border-white/40"
+            >
+              ⚙️ 設定
+            </Link>
           </div>
           <dl className="mt-10 grid gap-4 sm:grid-cols-3">
             {statCards.map((card) => (

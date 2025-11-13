@@ -1,5 +1,6 @@
 import type { Question, Difficulty, UserProgress } from './types';
 import { validateQuestion } from './questionValidation';
+import { loadApiKey } from './apiKeyManager';
 
 const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
@@ -26,10 +27,24 @@ interface WeaknessAnalysis {
   recommendedTopics: string[];
 }
 
-const getApiKey = (): string => {
+/**
+ * APIキーを取得（優先順位: ローカルストレージ → 環境変数）
+ * @returns APIキー
+ * @throws エラー - APIキーが設定されていない場合
+ */
+export const getApiKey = (): string => {
+  // 1. ローカルストレージから取得を試みる
+  const localKey = typeof window !== 'undefined' ? loadApiKey() : null;
+  if (localKey) {
+    return localKey;
+  }
+
+  // 2. 環境変数から取得
   const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error('GEMINI_API_KEY is not configured');
+    throw new Error(
+      'Gemini API key is not configured. Please set it in Settings or use GEMINI_API_KEY environment variable.'
+    );
   }
   return apiKey;
 };
