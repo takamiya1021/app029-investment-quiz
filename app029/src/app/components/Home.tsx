@@ -1,26 +1,39 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useQuizStore } from '@/store/useQuizStore';
 import { hasApiKey } from '@/lib/apiKeyManager';
 import WeaknessAnalysisModal from './ai/WeaknessAnalysisModal';
+import CategoryDetailModal from './CategoryDetailModal';
 
 const percent = (value: number): string => `${Math.round(value)}%`;
 
 export default function Home() {
   const progress = useQuizStore((state) => state.progress);
   const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
-  const hasKey = hasApiKey();
+  const [isCategoryDetailOpen, setIsCategoryDetailOpen] = useState(false);
+  const [hasKey, setHasKey] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // クライアント側でのみAPIキーの有無を確認（Hydration Error回避）
+  useEffect(() => {
+    setHasKey(hasApiKey());
+    setIsMounted(true);
+  }, []);
 
   const totalAccuracy = useMemo(() => {
-    if (!progress.totalQuestions) {
+    if (!isMounted || !progress.totalQuestions) {
       return 0;
     }
     return (progress.totalCorrect / progress.totalQuestions) * 100;
-  }, [progress.totalCorrect, progress.totalQuestions]);
+  }, [isMounted, progress.totalCorrect, progress.totalQuestions]);
 
+  // 上位3カテゴリーのみ表示（簡易版）
   const categoryBreakdown = useMemo(() => {
+    if (!isMounted) {
+      return [];
+    }
     return Object.entries(progress.categoryStats)
       .filter(([, stat]) => stat.total > 0)
       .map(([category, stat]) => ({
@@ -29,26 +42,32 @@ export default function Home() {
         total: stat.total,
       }))
       .sort((a, b) => b.total - a.total)
-      .slice(0, 4);
-  }, [progress.categoryStats]);
+      .slice(0, 3); // 上位3カテゴリーのみ
+  }, [isMounted, progress.categoryStats]);
 
-  const statCards = [
-    {
-      label: '累計正答率',
-      value: percent(Number.isNaN(totalAccuracy) ? 0 : totalAccuracy),
-      helper: `${progress.totalCorrect}/${progress.totalQuestions || 0}問`,
-    },
-    {
-      label: '受験したセット',
-      value: `${progress.totalQuizzes}回`,
-      helper: 'クイズ履歴',
-    },
-    {
-      label: '学習日数',
-      value: `${progress.studyDays}日`,
-      helper: progress.lastStudyDate ? `最終: ${progress.lastStudyDate}` : 'まだ記録がありません',
-    },
-  ];
+  const statCards = useMemo(
+    () => [
+      {
+        label: '累計正答率',
+        value: percent(Number.isNaN(totalAccuracy) ? 0 : totalAccuracy),
+        helper: `${isMounted ? progress.totalCorrect : 0}/${isMounted ? progress.totalQuestions : 0}問`,
+      },
+      {
+        label: '受験したセット',
+        value: `${isMounted ? progress.totalQuizzes : 0}回`,
+        helper: 'クイズ履歴',
+      },
+      {
+        label: '学習日数',
+        value: `${isMounted ? progress.studyDays : 0}日`,
+        helper:
+          isMounted && progress.lastStudyDate
+            ? `最終: ${progress.lastStudyDate}`
+            : 'まだ記録がありません',
+      },
+    ],
+    [isMounted, totalAccuracy, progress]
+  );
 
   return (
     <section className="min-h-[calc(100vh-80px)] bg-slate-950 text-white">
@@ -69,12 +88,6 @@ export default function Home() {
               className="inline-flex items-center justify-center rounded-full bg-emerald-400 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-emerald-300"
             >
               クイズを始める
-            </Link>
-            <Link
-              href="#category-insights"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white/90 transition hover:border-white/40"
-            >
-              カテゴリー別の弱点を見る
             </Link>
             <Link
               href="/settings"
@@ -109,36 +122,33 @@ export default function Home() {
           id="category-insights"
           className="flex-1 rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-6 backdrop-blur"
         >
-          <div>
+          <div className="mb-4">
             <p className="text-sm font-semibold uppercase tracking-wide text-emerald-200">
-              カテゴリー別サマリー
+              上位3カテゴリー
             </p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">伸びしろを科学する</h2>
-            <p className="mt-1 text-sm text-white/70">
-              学習データをもとに、重点的に磨くべき分野を表示します。
-            </p>
+            <h2 className="mt-1 text-xl font-semibold text-white">学習状況</h2>
           </div>
-          <ul className="mt-6 space-y-3">
+          <ul className="space-y-3 mb-5">
             {categoryBreakdown.length === 0 && (
-              <li className="rounded-2xl border border-dashed border-white/15 px-4 py-5 text-sm text-white/70">
-                まだ記録がありません。まずは1セット解いてみましょう。
+              <li className="rounded-2xl border border-dashed border-white/15 px-4 py-5 text-sm text-white/70 text-center">
+                まだ記録がありません
               </li>
             )}
             {categoryBreakdown.map((item) => (
               <li
                 key={item.category}
-                className="rounded-2xl border border-white/10 bg-slate-900/40 px-4 py-4"
+                className="rounded-2xl border border-white/10 bg-slate-900/40 px-4 py-3"
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-white">{item.category}</p>
-                    <p className="text-xs text-white/60">{item.total}問 で集計</p>
+                    <p className="text-xs text-white/60">{item.total}問</p>
                   </div>
-                  <span className="text-xl font-semibold text-emerald-300">
+                  <span className="text-lg font-semibold text-emerald-300">
                     {percent(item.accuracy)}
                   </span>
                 </div>
-                <div className="mt-3 h-2 rounded-full bg-white/10">
+                <div className="mt-2 h-1.5 rounded-full bg-white/10">
                   <div
                     className="h-full rounded-full bg-emerald-400"
                     style={{ width: `${Math.min(100, Math.round(item.accuracy))}%` }}
@@ -147,11 +157,23 @@ export default function Home() {
               </li>
             ))}
           </ul>
+          <button
+            onClick={() => setIsCategoryDetailOpen(true)}
+            className="w-full rounded-full border border-blue-400/40 bg-blue-400/10 px-6 py-3 text-sm font-semibold text-blue-200 transition hover:bg-blue-400/20 hover:border-blue-400/60"
+          >
+            📊 カテゴリー詳細を見る
+          </button>
         </div>
       </div>
 
       {/* 弱点診断モーダル */}
       <WeaknessAnalysisModal isOpen={isAnalysisOpen} onClose={() => setIsAnalysisOpen(false)} />
+
+      {/* カテゴリー詳細モーダル */}
+      <CategoryDetailModal
+        isOpen={isCategoryDetailOpen}
+        onClose={() => setIsCategoryDetailOpen(false)}
+      />
     </section>
   );
 }

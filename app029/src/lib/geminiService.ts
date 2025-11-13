@@ -2,7 +2,8 @@ import type { Question, Difficulty, UserProgress, WeaknessAnalysis } from './typ
 import { validateQuestion } from './questionValidation';
 import { loadApiKey } from './apiKeyManager';
 
-const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+// Gemini 2.5 Flash モデル（2025年11月時点の最新モデル）
+const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
 interface GeminiResponse {
   candidates: Array<{
@@ -78,6 +79,10 @@ const callGeminiApi = async (
     });
 
     if (!response.ok) {
+      // エラーレスポンスの詳細を取得
+      const errorBody = await response.text();
+      console.error('Gemini API Error Details:', errorBody);
+
       // レート制限エラーの場合はリトライ
       if (response.status === 429 && retryCount < maxRetries) {
         const backoffMs = Math.pow(2, retryCount) * 1000; // 指数バックオフ: 1s, 2s, 4s
@@ -90,7 +95,8 @@ const callGeminiApi = async (
         throw new Error('Max retries reached');
       }
 
-      throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
+      // 詳細なエラーメッセージを含める
+      throw new Error(`Gemini API error: ${response.status} ${response.statusText}. Details: ${errorBody}`);
     }
 
     const data: GeminiResponse = await response.json();
