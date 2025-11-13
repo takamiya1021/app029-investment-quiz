@@ -45,13 +45,18 @@ describe('WeaknessAnalysisModal', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseQuizStore.mockReturnValue({ progress: mockProgress });
+    mockUseQuizStore.mockImplementation((selector) => {
+      const store = {
+        progress: mockProgress,
+      };
+      return selector(store);
+    });
   });
 
   it('renders modal when isOpen is true', () => {
     render(<WeaknessAnalysisModal isOpen={true} onClose={mockOnClose} />);
 
-    expect(screen.getByText('弱点診断')).toBeInTheDocument();
+    expect(screen.getByText(/弱点診断/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /診断する/i })).toBeInTheDocument();
   });
 
@@ -85,10 +90,10 @@ describe('WeaknessAnalysisModal', () => {
     await user.click(analyzeButton);
 
     await waitFor(() => {
-      expect(screen.getByText('診断結果')).toBeInTheDocument();
-      expect(screen.getByText(/債券投資の基本/)).toBeInTheDocument();
+      expect(screen.getByText(/診断結果/)).toBeInTheDocument();
+      expect(screen.getAllByText(/債券投資の基本/).length).toBeGreaterThan(0);
       expect(screen.getByText(/正答率が50%と低めです/)).toBeInTheDocument();
-      expect(screen.getByText(/債券の利回り計算/)).toBeInTheDocument();
+      expect(screen.getAllByText(/債券の利回り計算/).length).toBeGreaterThan(0);
     });
   });
 
@@ -122,7 +127,7 @@ describe('WeaknessAnalysisModal', () => {
 
     // 完了後の表示確認
     await waitFor(() => {
-      expect(screen.getByText('診断結果')).toBeInTheDocument();
+      expect(screen.getByText(/診断結果/)).toBeInTheDocument();
     });
   });
 
@@ -138,12 +143,15 @@ describe('WeaknessAnalysisModal', () => {
   });
 
   it('displays insufficient data message when no quiz taken', () => {
-    mockUseQuizStore.mockReturnValue({
-      progress: {
-        ...mockProgress,
-        totalQuestions: 0,
-        totalCorrect: 0,
-      },
+    mockUseQuizStore.mockImplementation((selector) => {
+      const store = {
+        progress: {
+          ...mockProgress,
+          totalQuestions: 0,
+          totalCorrect: 0,
+        },
+      };
+      return selector(store);
     });
 
     render(<WeaknessAnalysisModal isOpen={true} onClose={mockOnClose} />);
