@@ -1,13 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuizStore } from '@/store/useQuizStore';
+import { hasApiKey } from '@/lib/apiKeyManager';
+import WeaknessAnalysisModal from './ai/WeaknessAnalysisModal';
 
 const percent = (value: number): string => `${Math.round(value)}%`;
 
 export default function Home() {
   const progress = useQuizStore((state) => state.progress);
+  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+  const hasKey = hasApiKey();
 
   const totalAccuracy = useMemo(() => {
     if (!progress.totalQuestions) {
@@ -78,6 +82,14 @@ export default function Home() {
             >
               ⚙️ 設定
             </Link>
+            {hasKey && (
+              <button
+                onClick={() => setIsAnalysisOpen(true)}
+                className="inline-flex items-center justify-center rounded-full border border-blue-400/40 bg-blue-400/10 px-6 py-3 text-sm font-semibold text-blue-200 transition hover:bg-blue-400/20"
+              >
+                🔍 弱点診断
+              </button>
+            )}
           </div>
           <dl className="mt-10 grid gap-4 sm:grid-cols-3">
             {statCards.map((card) => (
@@ -137,6 +149,9 @@ export default function Home() {
           </ul>
         </div>
       </div>
+
+      {/* 弱点診断モーダル */}
+      <WeaknessAnalysisModal isOpen={isAnalysisOpen} onClose={() => setIsAnalysisOpen(false)} />
     </section>
   );
 }

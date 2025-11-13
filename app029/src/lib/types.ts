@@ -45,6 +45,13 @@ export interface AppSettings {
   shuffleChoices: boolean;
 }
 
+export interface WeaknessAnalysis {
+  weakestCategory: string;
+  analysis: string;
+  advice: string;
+  recommendedTopics: string[];
+}
+
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 

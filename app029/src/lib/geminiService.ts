@@ -1,4 +1,4 @@
-import type { Question, Difficulty, UserProgress } from './types';
+import type { Question, Difficulty, UserProgress, WeaknessAnalysis } from './types';
 import { validateQuestion } from './questionValidation';
 import { loadApiKey } from './apiKeyManager';
 
@@ -18,13 +18,6 @@ interface GenerateQuestionsOptions {
   category: string;
   difficulty: Difficulty;
   count: number;
-}
-
-interface WeaknessAnalysis {
-  weakestCategory: string;
-  analysis: string;
-  advice: string;
-  recommendedTopics: string[];
 }
 
 /**

@@ -332,54 +332,58 @@
 
 ### タスク
 
-#### 【 】11-1. APIキー管理ロジック（1時間）
-- **Red**: ローカルストレージ読み書きテスト
-- **Green**: `lib/apiKeyManager.ts` 実装
-  - `saveApiKey(key: string): void` - ローカルストレージに保存
-  - `loadApiKey(): string | null` - ローカルストレージから読み込み
-  - `clearApiKey(): void` - APIキーを削除
-  - `hasApiKey(): boolean` - APIキーの有無確認
-- **Refactor**: エラーハンドリング、バリデーション追加
+#### 【x】11-1. APIキー管理ロジック（1時間）✅
+- **Red**: ローカルストレージ読み書きテスト ✅
+- **Green**: `lib/apiKeyManager.ts` 実装 ✅ `src/lib/apiKeyManager.ts`
+  - `saveApiKey(key: string): void` - ローカルストレージに保存 ✅
+  - `loadApiKey(): string | null` - ローカルストレージから読み込み ✅
+  - `clearApiKey(): void` - APIキーを削除 ✅
+  - `hasApiKey(): boolean` - APIキーの有無確認 ✅
+  - `maskApiKey(key: string): string` - APIキーのマスク表示 ✅
+- **Refactor**: エラーハンドリング、バリデーション追加 ✅
 - **セキュリティ**:
   - ローカルストレージに平文保存（ブラウザ標準のセキュリティに依存）
   - 表示時はマスク処理（`sk-***...***末尾4文字`形式）
+- **実装内容**: 15個のテスト実装、全機能完了
 
-#### 【 】11-2. geminiService.ts修正（30分）
-- **Red**: APIキー取得優先順位テスト
-- **Green**: `getApiKey()` 関数を修正
-  - 優先順位: ローカルストレージ → 環境変数
-  - ローカルストレージにキーがあればそちらを優先
-  - 環境変数へのフォールバック維持
-- **Refactor**: エラーメッセージ改善（「設定画面でAPIキーを設定してください」等）
+#### 【x】11-2. geminiService.ts修正（30分）✅
+- **Red**: APIキー取得優先順位テスト ✅
+- **Green**: `getApiKey()` 関数を修正 ✅ `src/lib/geminiService.ts:35-50`
+  - 優先順位: ローカルストレージ → 環境変数 ✅
+  - ローカルストレージにキーがあればそちらを優先 ✅
+  - 環境変数へのフォールバック維持 ✅
+- **Refactor**: エラーメッセージ改善 ✅
+- **実装内容**: 5個のテスト追加、既存テスト1件修正
 
-#### 【 】11-3. 設定UI実装（1時間）
-- **Red**: 設定画面コンポーネントテスト
-- **Green**: `app/components/settings/ApiKeySettings.tsx` 実装
-  - APIキー入力フォーム
-  - 保存ボタン
-  - クリアボタン
-  - 現在の設定状態表示（マスク表示）
-  - 「設定済み」「未設定」ステータス表示
-- **Refactor**: バリデーション、UX改善
-  - 入力フィールドは`type="password"`
-  - 保存成功時のフィードバック
-  - エラー時の適切なメッセージ
+#### 【x】11-3. 設定UI実装（1時間）✅
+- **Red**: 設定画面コンポーネントテスト ✅
+- **Green**: `app/components/settings/ApiKeySettings.tsx` 実装 ✅ `src/app/components/settings/ApiKeySettings.tsx`
+  - APIキー入力フォーム ✅
+  - 保存ボタン ✅
+  - クリアボタン ✅
+  - 現在の設定状態表示（マスク表示）✅
+  - 「設定済み」「未設定」ステータス表示 ✅
+- **Refactor**: バリデーション、UX改善 ✅
+  - 入力フィールドは`type="password"` ✅
+  - 保存成功時のフィードバック ✅
+  - エラー時の適切なメッセージ ✅
+- **実装内容**: 9個のテスト実装、全機能完了
 
-#### 【 】11-4. UI統合（30分）
-- **Red**: 設定画面アクセステスト
-- **Green**: 設定画面への導線追加
-  - ホーム画面に「設定」ボタン追加
-  - または、ヘッダーに設定アイコン追加
-  - `/settings` ルート作成（`app/settings/page.tsx`）
-- **Refactor**: ナビゲーション改善
+#### 【x】11-4. UI統合（30分）✅
+- **Red**: 設定画面アクセステスト ✅
+- **Green**: 設定画面への導線追加 ✅
+  - ホーム画面に「設定」ボタン追加 ✅ `src/app/components/Home.tsx`
+  - `/settings` ルート作成 ✅ `src/app/settings/page.tsx`
+- **Refactor**: ナビゲーション改善 ✅
+- **実装内容**: 設定ページ作成、ホーム画面に設定リンク追加完了
 
 ### 完了条件
-- [ ] ユーザーがUI上でAPIキーを入力・保存できる
-- [ ] ローカルストレージに保存され、ページリロード後も維持される
-- [ ] AI機能実行時、ローカルストレージのキーが優先使用される
-- [ ] APIキーの削除（クリア）機能が動作する
-- [ ] 全テストがパス
-- [ ] セキュリティ: APIキーは表示時にマスクされる
+- [x] ユーザーがUI上でAPIキーを入力・保存できる ✅
+- [x] ローカルストレージに保存され、ページリロード後も維持される ✅
+- [x] AI機能実行時、ローカルストレージのキーが優先使用される ✅
+- [x] APIキーの削除（クリア）機能が動作する ✅
+- [x] 全テストがパス ✅ （105個のテスト全パス）
+- [x] セキュリティ: APIキーは表示時にマスクされる ✅
 
 ### セキュリティ考慮事項
 - ローカルストレージは平文保存（JavaScriptから読み取り可能）
@@ -470,6 +474,124 @@
 
 ---
 
+## Phase 13: AI機能のUI統合（予定工数: 6時間）
+
+### 背景
+Phase 7でAI機能（問題生成・解説強化・弱点診断）が実装され、Phase 11でAPIキー設定UIが実装されたが、これらのAI機能を呼び出すUIボタンが存在しない。ユーザーが「AI使ってる感が全然ない」状態となっているため、既存のAI機能にアクセスできるUIを追加する。
+
+### 参照ドキュメント
+- [Phase 13 要件定義書](./phase13-requirements.md) - ユーザーニーズ、機能要件、非機能要件、ユースケース、受入基準
+- [Phase 13 技術設計書](./phase13-technical-design.md) - アーキテクチャ設計、コンポーネント設計、データフロー、テスト戦略
+
+### タスク
+
+#### 【 】13-1. 弱点診断UI実装（2時間）
+- **Red**: WeaknessAnalysisModal コンポーネントテスト
+  - モーダル表示・非表示テスト
+  - APIキー未設定時の動作テスト
+  - API呼び出し成功・失敗のテスト
+  - 学習データ不足時のテスト
+- **Green**: `app/components/ai/WeaknessAnalysisModal.tsx` 実装
+  - モーダルコンポーネント作成
+  - `analyzeWeakness()` 呼び出しロジック
+  - 診断結果表示（弱点カテゴリー・分析・アドバイス・推奨トピック）
+  - ローディング状態管理
+  - エラーハンドリング
+- **Green**: `Home.tsx` に弱点診断ボタン追加
+  - APIキー設定済み時のみ表示
+  - ボタン押下でモーダル表示
+- **Refactor**: UI/UX改善、エラーメッセージ最適化
+- **テスト**: 7個のユニットテスト追加
+
+#### 【 】13-2. 解説強化UI実装（2時間）
+- **Red**: EnhancedExplanationView コンポーネントテスト
+  - 「もっと詳しく」ボタン表示テスト
+  - APIキー未設定時は非表示
+  - API呼び出し成功・失敗のテスト
+  - キャッシュ動作確認テスト
+  - マークダウン表示テスト
+- **Green**: `app/components/ai/EnhancedExplanationView.tsx` 実装
+  - 「もっと詳しく」ボタン作成
+  - `enhanceExplanation()` 呼び出しロジック
+  - 強化解説の展開表示（マークダウン対応）
+  - キャッシュ実装（同じ問題は再取得しない）
+  - ローディング状態管理
+- **Green**: `ExplanationCard.tsx` に統合
+  - APIキー設定済み時のみ表示
+  - 各問題カードに「もっと詳しく」ボタン追加
+- **Refactor**: マークダウン表示最適化、UI改善
+- **テスト**: 7個のユニットテスト追加
+
+#### 【 】13-3. AI問題生成UI実装（2時間）
+- **Red**: AIQuestionGeneratorModal コンポーネントテスト
+  - モーダル表示・非表示テスト
+  - パラメータ選択UI動作テスト
+  - APIキー未設定時はdisabled
+  - API呼び出し成功・失敗のテスト
+  - 問題生成後のクイズ開始テスト
+- **Green**: `app/components/ai/AIQuestionGeneratorModal.tsx` 実装
+  - モーダルコンポーネント作成
+  - パラメータ選択UI（カテゴリー・難易度・問題数）
+  - `generateQuestions()` 呼び出しロジック
+  - 進捗バー表示
+  - 生成成功後のコールバック処理
+- **Green**: `QuizShell.tsx` (CategoryView) に統合
+  - APIキー未設定時はdisabled状態
+  - 「AI問題を生成」ボタン追加
+  - 生成された問題でクイズ開始
+- **Refactor**: パラメータ選択UIのUX改善、進捗表示最適化
+- **テスト**: 8個のユニットテスト追加
+
+#### 【 】13-4. E2Eテスト実装（1時間）
+- **Red**: E2Eテストシナリオ作成
+  - 弱点診断フローテスト
+  - 解説強化フローテスト
+  - AI問題生成フローテスト
+  - APIキー未設定時の動作テスト
+- **Green**: `e2e/ai-features-phase13.spec.ts` 作成
+  - 4個のE2Eテストケース実装
+  - Playwrightで全フロー自動テスト
+- **Refactor**: テスト安定性向上、アサーション強化
+
+#### 【 】13-5. 統合・品質確認（1時間）
+- **Red**: 全テスト実行・カバレッジ確認
+- **Green**: ESLint・TypeScriptエラー修正
+- **Refactor**: コード品質向上
+  - 共通ロジックの抽出
+  - エラーハンドリングの統一
+  - パフォーマンス最適化
+- **ドキュメント更新**: README.md、implementation.md
+
+### 完了条件
+- [ ] ホーム画面に「弱点診断」ボタンが表示され、診断が実行できる
+- [ ] 結果画面の各問題カードに「もっと詳しく」ボタンが表示され、解説強化が実行できる
+- [ ] クイズ画面に「AI問題を生成」ボタンが表示され、問題生成が実行できる
+- [ ] APIキー未設定時は適切にボタンが非表示またはdisabled状態
+- [ ] 全ユニットテストがパス（既存105個 + Phase 13新規22個 = 127個）
+- [ ] 全E2Eテストがパス（既存18個 + Phase 13新規4個 = 22個）
+- [ ] コードカバレッジ87%以上を維持
+- [ ] ESLintエラー・警告ゼロ
+- [ ] TypeScript型エラーゼロ
+
+### 新規ファイル
+- `src/app/components/ai/WeaknessAnalysisModal.tsx` - 弱点診断モーダル
+- `src/app/components/ai/EnhancedExplanationView.tsx` - 解説強化ビュー
+- `src/app/components/ai/AIQuestionGeneratorModal.tsx` - AI問題生成モーダル
+- `src/__tests__/ai/WeaknessAnalysisModal.test.tsx` - 弱点診断テスト
+- `src/__tests__/ai/EnhancedExplanationView.test.tsx` - 解説強化テスト
+- `src/__tests__/ai/AIQuestionGeneratorModal.test.tsx` - AI問題生成テスト
+- `e2e/ai-features-phase13.spec.ts` - AI機能E2Eテスト
+
+### 修正ファイル
+- `src/app/components/Home.tsx` - 弱点診断ボタン追加
+- `src/app/components/quiz/ExplanationCard.tsx` - 解説強化ビュー統合
+- `src/app/components/quiz/QuizShell.tsx` - AI問題生成ボタン追加
+- `src/__tests__/Home.test.tsx` - 弱点診断ボタンテスト追加
+- `src/__tests__/ExplanationCard.test.tsx` - 解説強化ビューテスト追加
+- `src/__tests__/QuizShell.test.tsx` - AI問題生成ボタンテスト追加
+
+---
+
 ## マイルストーン
 
 ### M1: 基本機能実装完了（Phase 0-4）✅
@@ -553,6 +675,7 @@
 - [x] Phase 10: デプロイ準備 - ✅ 完了
 - [x] Phase 11: APIキー設定UI - ✅ **完了（ローカルストレージ保存）**
 - [x] Phase 12: PWA対応 - ✅ **完了（@ducanh2912/next-pwa）**
+- [ ] Phase 13: AI機能のUI統合 - 🚧 **進行中（要件定義書・技術設計書完成）**
 
 ### 教育品質
 - [x] 問題内容が正確 - ✅ 54問作成済み（6カテゴリー）
