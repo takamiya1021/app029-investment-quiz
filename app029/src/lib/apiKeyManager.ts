@@ -15,7 +15,9 @@ export function saveApiKey(key: string): void {
     throw new Error('API key cannot be empty');
   }
 
-  localStorage.setItem(STORAGE_KEY, key.trim());
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, key.trim());
+  }
 }
 
 /**
@@ -23,6 +25,10 @@ export function saveApiKey(key: string): void {
  * @returns APIキー、または存在しない場合はnull
  */
 export function loadApiKey(): string | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
   const key = localStorage.getItem(STORAGE_KEY);
 
   if (!key || key.trim() === '') {
@@ -36,7 +42,9 @@ export function loadApiKey(): string | null {
  * ローカルストレージからAPIキーを削除
  */
 export function clearApiKey(): void {
-  localStorage.removeItem(STORAGE_KEY);
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(STORAGE_KEY);
+  }
 }
 
 /**
@@ -44,6 +52,10 @@ export function clearApiKey(): void {
  * @returns APIキーが存在する場合true
  */
 export function hasApiKey(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
   const key = loadApiKey();
   return key !== null;
 }

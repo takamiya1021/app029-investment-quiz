@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { Question } from '@/lib/types';
+import EnhancedExplanationView from '@/app/components/ai/EnhancedExplanationView';
 
 interface ExplanationCardProps {
   question: Question;
@@ -40,6 +41,9 @@ export default function ExplanationCard({ question, userAnswer, index }: Explana
         </p>
       </div>
       <p className="mt-4 rounded-2xl bg-white/5 p-4 text-sm text-white/80">{question.explanation}</p>
+
+      {/* AI解説強化ビュー (Phase 13-2) */}
+      <EnhancedExplanationView question={question} />
     </article>
   );
 }
