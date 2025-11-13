@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useQuizStore } from '@/store/useQuizStore';
 import { generateQuiz, generateReviewQuiz } from '@/lib/quizEngine';
 import { getAvailableCategories, getQuestionsByCategory } from '@/lib/questionBank';
-import type { Difficulty } from '@/lib/types';
+import type { Difficulty, Question } from '@/lib/types';
+import { hasApiKey } from '@/lib/apiKeyManager';
 import ExplanationCard from './ExplanationCard';
+import AIQuestionGeneratorModal from '@/app/components/ai/AIQuestionGeneratorModal';
 
 const DEFAULT_DIFFICULTY: Difficulty = 'beginner';
 
@@ -43,6 +45,9 @@ function CategoryView() {
   const startQuiz = useQuizStore((state) => state.startQuiz);
   const categoryAccuracy = useQuizStore((state) => state.categoryAccuracy);
   const getWrongQuestions = useQuizStore((state) => state.getWrongQuestions);
+
+  const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
+  const hasKey = hasApiKey();
 
   const wrongQuestions = getWrongQuestions();
   const hasWrongQuestions = wrongQuestions.length > 0;
@@ -88,6 +93,18 @@ function CategoryView() {
     });
   };
 
+  /**
+   * AI生成問題でクイズを開始（Phase 13-3）
+   */
+  const handleGenerated = (questions: Question[], category: string) => {
+    startQuiz({
+      category: `AI: ${category}`,
+      difficulty: DEFAULT_DIFFICULTY,
+      questions,
+    });
+    setIsGeneratorOpen(false);
+  };
+
   return (
     <section className="min-h-screen bg-slate-950 px-6 py-16 text-white">
       <div className="mx-auto flex max-w-5xl flex-col gap-8">
@@ -114,6 +131,23 @@ function CategoryView() {
                 復習モード（{wrongQuestions.length}問）
               </button>
             )}
+            {/* AI問題生成ボタン (Phase 13-3) */}
+            <button
+              type="button"
+              onClick={() => setIsGeneratorOpen(true)}
+              disabled={!hasKey}
+              className={`
+                rounded-full border px-5 py-3 text-sm font-semibold transition
+                ${
+                  hasKey
+                    ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-300 hover:border-emerald-400/60 hover:bg-emerald-400/20'
+                    : 'cursor-not-allowed border-white/10 bg-white/5 text-white/40'
+                }
+              `}
+              title={hasKey ? 'AI問題を生成' : 'APIキーを設定してください'}
+            >
+              ✨ AI問題を生成
+            </button>
             <Link
               href="/"
               className="rounded-full border border-white/10 px-5 py-3 text-sm text-white/70 transition hover:border-white/40"
@@ -141,6 +175,13 @@ function CategoryView() {
             </button>
           ))}
         </div>
+
+        {/* AI問題生成モーダル (Phase 13-3) */}
+        <AIQuestionGeneratorModal
+          isOpen={isGeneratorOpen}
+          onClose={() => setIsGeneratorOpen(false)}
+          onGenerated={handleGenerated}
+        />
       </div>
     </section>
   );
