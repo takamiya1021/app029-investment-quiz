@@ -49,6 +49,9 @@ export default function ApiKeySettings() {
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <div className="mb-4">
           <p className="text-sm text-gray-600 mb-2">
+            使用モデル: <span className="font-mono text-sm text-blue-600">gemini-2.5-flash</span>
+          </p>
+          <p className="text-sm text-gray-600 mb-2">
             ステータス:{' '}
             <span className={keyExists ? 'text-green-600 font-semibold' : 'text-gray-400'}>
               {keyExists ? '設定済み' : '未設定'}

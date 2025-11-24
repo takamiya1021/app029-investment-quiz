@@ -1,258 +1,113 @@
-# 投資クイズアプリ
+# ✨ 投資クイズアプリ
 
-投資の基礎知識を楽しく学べるクイズアプリケーションです。株式、債券、投資信託、リスク管理などのカテゴリー別に問題を解いて、投資の知識を身につけましょう。
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-38BDF8?logo=tailwindcss&logoColor=white) ![Zustand](https://img.shields.io/badge/Zustand-Store-44353B?logo=react&logoColor=white) ![Jest](https://img.shields.io/badge/Jest-30-C21325?logo=jest&logoColor=white) ![Playwright](https://img.shields.io/badge/Playwright-1.56-2EAD33?logo=playwright&logoColor=white) ![PWA Ready](https://img.shields.io/badge/PWA-ready-5A0FC8?logo=pwa&logoColor=white) ![License](https://img.shields.io/badge/license-educational-yellow)
+
+投資の基礎〜応用を 6 カテゴリー・54 問のクイズで学ぶ学習アプリです。学習ログをローカル保存し、Gemini 2.5 Flash を使った問題生成・解説強化・弱点診断で復習を最短化します。
 
 ![投資クイズアプリ - ホーム画面](doc/images/screenshot-home.png)
 
-## 🎯 特徴
+## デモ URL
+公開準備中（デプロイ後にリンクを掲載します）
 
-- **54問のプリセット問題**: 6つのカテゴリーに分類された投資に関する問題
-- **復習モード**: 間違えた問題だけを復習できる機能
-- **学習進捗管理**: カテゴリー別の正答率、学習日数、受験回数などを記録
-- **直感的なUI**: Tailwind CSSを使用したモダンなデザイン
-- **完全TDD**: Jest + React Testing Libraryで76個のテスト、カバレッジ87.12%達成
-- **堅牢なエラーハンドリング**: Gemini API Rate Limit対応、データバリデーション実装
-- **包括的E2Eテスト**: Playwright で18ケースの自動テスト実装
+## Features
+- ✏️ **3種類の出題モード** — カテゴリー別 / ランダム / 復習（間違えた問題）をワンタップで切り替え。
+- 📊 **学習ログの自動可視化** — 累計正答率・受験セット数・学習日数とカテゴリー別スタッツをカード表示。
+- 🤖 **Gemini 連携** — 問題生成・解説強化・弱点診断を API キー設定だけで利用可能。
+- 🧽 **データ品質検証** — 54 問すべてをバリデーションし、AI 生成問題も JSON 検証や重複チェックを実施。
+- 📱 **PWA & Offline** — ホーム画面に追加でき、オフラインになると自動で復旧案内ページへ切り替わります。
 
-## 📚 カテゴリー
+## 主要機能の詳細
+1. **クイズ作成フロー** — カテゴリーやランダムを選ぶだけで 10 問セットを自動編成し、進捗バーと回答履歴をわかりやすく提示します。
+2. **復習サイクル** — 間違えた問題は自動でストックされ、ワンタップで「復習10問」を作成して記憶の定着をサポートします。
+3. **AI アシスト** — Gemini 2.5 Flash を使った問題生成・解説強化・弱点診断で、自分専用の学習素材とアドバイスを即座に取得できます。
+4. **学習ダッシュボード** — ホームや詳細モーダルで累計正答率、受験回数、学習日数、カテゴリー別の強み弱みをグラフィカルに表示します。
+5. **PWA 体験** — インストール感覚でホーム追加でき、オフライン時は専用ページに自動遷移して再接続を促します。
 
-1. 株式投資の基本（10問）
-2. 債券投資の基本（8問）
-3. 投資信託・ETF（10問）
-4. リスク管理（10問）
-5. 税金・制度（8問）
-6. 経済用語（8問）
+## 技術スタック
+- **フレームワーク**: Next.js 16 (App Router), React 19, TypeScript 5
+- **スタイリング**: Tailwind CSS 4, React Markdown + remark-gfm
+- **状態管理**: Zustand 5 + LocalStorage 永続化ユーティリティ
+- **AI 連携**: Google Gemini 2.5 Flash（API key 経由）
+- **テスト**: Jest 30 + React Testing Library（16 suites）、Playwright 1.56
+- **PWA**: @ducanh2912/next-pwa, カスタム `/offline` ページ
 
-## 🚀 セットアップ
-
+## セットアップ
 ### 前提条件
+- Node.js 18.18 以上
+- npm (推奨)
 
-- Node.js 18.x以上
-- npm または yarn
-
-### インストール
-
+### インストール & 起動
 ```bash
-# リポジトリをクローン
 git clone <repository-url>
 cd app029-investment-quiz/app029
-
-# 依存パッケージをインストール
 npm install
-
-# 開発サーバーを起動
-npm run dev
+npm run dev   # http://localhost:3000
 ```
 
-ブラウザで [http://localhost:3000](http://localhost:3000) を開いてください。
-
-## 🧪 テスト
-
+## テスト
 ```bash
-# 全テストを実行
-npm test
-
-# カバレッジ付きでテスト実行
-npm test -- --coverage
-
-# テストをウォッチモードで実行
-npm run test:watch
+npm test                 # Jest（Statements 86.34% @ 2025-11-19）
+npm run test:e2e         # Playwright（127.0.0.1:3100 で dev サーバーを自動起動）
 ```
 
-## 🏗️ ビルド
-
-```bash
-# 本番用ビルド
-npm run build
-
-# 本番サーバーを起動
-npm start
-```
-
-## 🎨 技術スタック
-
-- **フレームワーク**: Next.js 16 (App Router)
-- **言語**: TypeScript
-- **スタイリング**: Tailwind CSS 4
-- **状態管理**: Zustand
-- **テスト**: Jest + React Testing Library
-- **E2Eテスト**: Playwright
-
-## 📁 プロジェクト構造
-
+## プロジェクト構造
 ```
 app029-investment-quiz/
-├── app029/                     # Next.jsアプリケーション本体
-│   ├── src/
-│   │   ├── app/                # Next.js App Router
-│   │   │   ├── components/     # UIコンポーネント
-│   │   │   │   ├── Home.tsx
-│   │   │   │   └── quiz/
-│   │   │   │       ├── QuizShell.tsx
-│   │   │   │       └── ExplanationCard.tsx
-│   │   │   ├── page.tsx        # ホームページ
-│   │   │   └── quiz/
-│   │   │       └── page.tsx    # クイズページ
-│   │   ├── lib/                # ライブラリ・ユーティリティ
-│   │   │   ├── types.ts        # 型定義
-│   │   │   ├── quizEngine.ts   # クイズロジック
-│   │   │   ├── questionBank.ts # 問題管理
-│   │   │   ├── questionValidation.ts # 問題データバリデーション
-│   │   │   ├── geminiService.ts # AI機能（Gemini API）
-│   │   │   └── storage.ts      # ローカルストレージ
-│   │   ├── store/              # Zustand状態管理
-│   │   │   └── useQuizStore.ts
-│   │   ├── data/               # 問題データ
-│   │   │   └── questions.json
-│   │   └── __tests__/          # ユニットテスト
-│   │       ├── quizEngine.test.ts
-│   │       ├── useQuizStore.test.ts
-│   │       ├── questionValidation.test.ts
-│   │       ├── geminiService.test.ts
-│   │       └── ...
-│   └── e2e/                    # E2Eテスト（Playwright）
-│       ├── quiz-flow.spec.ts   # クイズフローテスト
-│       ├── results-and-stats.spec.ts # 結果・統計テスト
-│       ├── review-mode.spec.ts # 復習モードテスト
-│       └── ai-features.spec.ts # AI機能テスト
-├── doc/                        # ドキュメント
-│   ├── images/                 # スクリーンショット
-│   │   └── screenshot-home.png
-│   ├── design.md               # 設計書
-│   ├── requirements.md         # 要件定義書
-│   ├── implementation.md       # 実装計画書
-│   ├── phase13-requirements.md # Phase 13要件
-│   └── phase13-technical-design.md # Phase 13技術設計
-└── README.md                   # このファイル
+├── README.md
+├── doc/                        # 要件・設計メモ、スクリーンショット
+└── app029/
+    ├── README.md
+    ├── src/
+    │   ├── app/                # Home, Quiz, settings, offline, ai など
+    │   ├── data/questions.json
+    │   ├── lib/                # quizEngine, questionBank, geminiService...
+    │   ├── store/useQuizStore.ts
+    │   └── __tests__/          # lib/store/UI/AI のテスト
+    ├── e2e/                    # Playwright シナリオ
+    ├── public/                 # アイコン & PWA アセット
+    └── coverage/, test-results/
 ```
 
-## 🔧 機能詳細
+## PWA / Design
+- サイトをホーム追加すると、アイコンからフルスクリーン表示で利用できます。
+- オフライン時は専用ページに切り替わり、再接続ボタンで復旧を促します。
+- UI はダークトーンのTailwindデザインで統一し、AI 機能は API キー未設定時に自動で非表示になります。
 
-### クイズ機能
-
-- カテゴリー別出題（各カテゴリー10問）
-- ランダム出題（全カテゴリーから10問）
-- 復習モード（間違えた問題のみ出題）
-- 問題ごとの詳細な解説
-- リアルタイムの進捗表示
-
-### 学習管理
-
-- カテゴリー別正答率
-- 累計正答率
-- 学習日数カウント
-- 受験したセット数
-- 間違えた問題の自動記録
-
-### データ品質保証
-
-- **包括的バリデーション**: 問題データの整合性チェック
-  - 必須フィールド検証（ID、カテゴリー、問題文、選択肢、正解、解説、難易度）
-  - 選択肢の数と正解インデックスの整合性チェック
-  - 重複選択肢の検出
-  - テキスト長の妥当性検証
-- **ロード時検証**: アプリケーション起動時の自動データ検証
-- **問題ID重複検出**: 問題バンク全体での一意性保証
-
-### AI機能（オプショナル）
-
-Gemini APIを使用したAI機能が実装されています（要APIキー）:
-
-- **問題の自動生成**: カテゴリー別に新しい問題を生成
-- **解説の強化**: より詳しい解説を提供
-- **弱点診断とアドバイス**: 学習履歴に基づく分析
-
-**堅牢なエラーハンドリング**:
-- Rate Limit（429エラー）対応の指数バックオフリトライ
-- 生成問題の品質チェック（重複検出、長さバリデーション）
-- ネットワークエラーの適切なハンドリング
-
-環境変数 `GEMINI_API_KEY` を設定することで利用可能になります。
-
+## ビルド & デプロイ
 ```bash
-# .env.local
-GEMINI_API_KEY=your-api-key-here
+npm run build
+npm start   # 本番サーバー（PWA を含む）
 ```
+PWA を含むため HTTPS 環境でホストし、Gemini API キーは必ずアプリ内の設定画面から登録してください。
 
-**セキュリティ**: APIキーは環境変数で管理され、リポジトリにコミットされません。
+## Gemini API キー
+1. 画面右上の「⚙️ 設定」または `/settings` でキーを保存（ブラウザ `localStorage` 上に `gemini_api_key` として平文保管）。
+2. 取得済みキーはクライアント側 localStorage のみを参照し、サーバー環境変数からは読み取りません。
+3. キー未設定時は AI 機能のトグルやボタンが自動的に非活性化されます。
 
-## 📊 テスト
+## AI 機能について
+- 🧠 **AI問題生成**: カテゴリー・難易度・出題数(3/5/10)を選ぶと、Gemini 2.5 Flash が新しい4択問題を返し、品質チェックを通過したものだけが出題候補に追加されます。
+- 📖 **解説強化**: 各設問の解説をボタンひとつで詳しいMarkdown解説に書き換え、同じ問題はキャッシュ済みテキストをそのまま再表示します。
+- 🔍 **弱点診断**: 学習ログを渡すと、苦手カテゴリーと改善ポイント、推奨トピックを JSON で受け取り、そのままモーダルに表示します。
+- ☔ **フェイルセーフ**: API キーが保存されていない / 通信できない場合は AI ボタンが自動で隠れ、従来のクイズ・復習・統計のみで利用できます。
 
-プロジェクトは完全なTDDアプローチで開発されており、以下のテストカバレッジを実現しています:
+## 開発ドキュメント
+- `doc/requirements.md`
+- `doc/design.md`
+- `doc/implementation.md`
+- `doc/phase13-requirements.md`
+- `doc/phase13-technical-design.md`
 
-### ユニットテスト（Jest + React Testing Library）
-- **テストケース**: 76個（全てパス ✅）
-- **コードカバレッジ**: 87.12%
-  - Statements: 87.12%
-  - Branches: 81.48%
-  - Functions: 88.88%
-  - Lines: 87.12%
+## コントリビューション
+Issue / Pull Request を歓迎します。再現手順・期待結果・スクリーンショットやログを添えてください。
 
-### E2Eテスト（Playwright）
-- **テストケース**: 18個
-  - クイズフロー: 3ケース
-  - 結果・統計: 5ケース
-  - 復習モード: 4ケース
-  - AI機能: 6ケース（APIキー必要分はskip設定）
+## ライセンス
+教育目的で提供されており、商用利用や再配布に関するライセンスは別途ご相談ください。
 
-### テスト実行方法
+## 作者
+[吉倉大晄 (Yoshikura Hiroaki)](https://github.com/yoshikurahiroaki)
 
-```bash
-# ユニットテスト
-npm test                    # 全テスト実行
-npm test -- --coverage      # カバレッジ付き
-npm run test:watch          # ウォッチモード
-
-# E2Eテスト
-npx playwright test         # 全E2Eテスト実行
-npx playwright test --ui    # UIモードで実行
-npx playwright test --headed # ヘッド付きブラウザで実行
-```
-
-## ⚠️ 免責事項
-
-**重要**: このアプリケーションは教育目的のみで提供されています。
-
-- 本アプリケーションは投資教育のための学習ツールです
-- **投資助言や金融商品の推奨を目的としたものではありません**
-- 実際の投資判断は、必ず専門家に相談してください
-- 本アプリケーションの情報に基づく投資判断による損失について、開発者は一切責任を負いません
-- 投資はリスクを伴います。自己責任で行ってください
-
-## 📝 開発プロセス
-
-このプロジェクトはTDD（Test-Driven Development）の原則に従って開発されました:
-
-1. **Red**: テストを先に書く
-2. **Green**: テストをパスする最小限の実装
-3. **Refactor**: コードの品質を向上
-
-### 実装フェーズ
-- **Phase 0-7**: コア機能実装（問題管理、クイズエンジン、UI、統計、復習モード、AI機能）
-- **Phase 8**: エラーハンドリング・品質保証
-  - データバリデーション実装
-  - Gemini API Rate Limit対応（指数バックオフ）
-  - 生成問題の品質チェック
-- **Phase 9**: E2Eテスト実装
-  - クイズフロー自動テスト
-  - 結果・統計表示テスト
-  - 復習モード動作確認
-  - AI機能統合テスト
-
-詳細は `doc/implementation.md` を参照してください。
-
-## 📄 ライセンス
-
-このプロジェクトは教育目的で作成されています。
-
-## 🤝 貢献
-
-バグ報告や機能要望は、GitHubのIssueでお願いします。
-
-## 👨‍💻 作者
-
-[吉倉大晄]
-
----
-
-**注意**: 実際の投資を行う前に、必ず金融の専門家にご相談ください。本アプリケーションは教育目的のみで、投資助言を提供するものではありません。
+## 謝辞
+- Next.js / React / Tailwind CSS / Zustand / Jest / Playwright コミュニティ
+- Google Gemini チーム（Generative AI API）
+- @ducanh2912/next-pwa メンテナのみなさん

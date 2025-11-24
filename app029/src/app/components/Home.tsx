@@ -104,6 +104,17 @@ export default function Home() {
               </button>
             )}
           </div>
+          {!hasKey && isMounted && (
+            <div className="mt-4 rounded-lg border border-yellow-400/30 bg-yellow-400/10 px-4 py-3 backdrop-blur">
+              <p className="text-sm text-yellow-200">
+                💡 AI機能（問題生成・解説強化・弱点診断）を使うには、
+                <Link href="/settings" className="ml-1 underline font-semibold hover:text-yellow-100">
+                  設定画面
+                </Link>
+                でGemini APIキーを設定してください
+              </p>
+            </div>
+          )}
           <dl className="mt-10 grid gap-4 sm:grid-cols-3">
             {statCards.map((card) => (
               <div

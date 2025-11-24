@@ -119,6 +119,7 @@ describe('geminiService', () => {
           ok: false,
           status: 429,
           statusText: 'Too Many Requests',
+          text: async () => 'Rate limit exceeded',
         })
         .mockResolvedValueOnce({
           ok: true,
@@ -142,6 +143,7 @@ describe('geminiService', () => {
           ok: false,
           status: 429,
           statusText: 'Too Many Requests',
+          text: async () => 'Rate limit exceeded',
         });
 
         await expect(
@@ -153,7 +155,7 @@ describe('geminiService', () => {
         ).rejects.toThrow('Max retries reached');
 
         // Verify that it tried multiple times (initial + 3 retries = 4 attempts)
-        expect(mockFetch).toHaveBeenCalled();
+        expect(mockFetch).toHaveBeenCalledTimes(4);
       },
       10000
     ); // 10 second timeout for retry logic

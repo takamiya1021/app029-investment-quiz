@@ -135,8 +135,9 @@
 
 ### 6.4 AI API仕様
 - **使用API**: Google Gemini API
-  - モデル: gemini-2.0-flash-exp
-  - エンドポイント: Google AI Studio API
+  - デフォルトモデル: gemini-2.5-flash
+  - 推奨SDK: `@google/genai` (npm)
+  - 公式ドキュメント: https://ai.google.dev/gemini-api/docs
 
 - **APIキー管理**
   - 保存場所: LocalStorage

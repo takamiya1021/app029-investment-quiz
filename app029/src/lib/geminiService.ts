@@ -51,13 +51,14 @@ const callGeminiApi = async (
   retryCount: number = 0
 ): Promise<string> => {
   const apiKey = getApiKey();
-  const url = `${GEMINI_API_ENDPOINT}?key=${apiKey}`;
+  const url = GEMINI_API_ENDPOINT;
 
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
       },
       body: JSON.stringify({
         contents: [
@@ -73,7 +74,7 @@ const callGeminiApi = async (
           temperature: 0.7,
           topK: 40,
           topP: 0.95,
-          maxOutputTokens: 2048,
+          maxOutputTokens: 8192,
         },
       }),
     });
@@ -148,7 +149,12 @@ JSONフォーマットで出力してください:
   }
 ]
 
-JSONのみを返してください。説明文は不要です。`;
+重要な注意事項:
+- JSONのみを返してください。説明文やマークダウンのコードブロックは不要です
+- 文字列内の改行は使わず、1行で記述してください
+- 二重引用符を含む場合は必ずエスケープ（\\"）してください
+- すべての文字列を完全に閉じてください
+- 有効なJSON形式を厳守してください`;
 
   const responseText = await callGeminiApi(prompt);
 
@@ -160,7 +166,19 @@ JSONのみを返してください。説明文は不要です。`;
     jsonText = jsonText.replace(/```\n?/, '').replace(/\n?```$/, '');
   }
 
-  const questions: Question[] = JSON.parse(jsonText);
+  // JSONパース（エラーハンドリング強化）
+  let questions: Question[];
+  try {
+    questions = JSON.parse(jsonText);
+  } catch (parseError) {
+    console.error('Failed to parse JSON response from Gemini API');
+    console.error('Parse error:', parseError);
+    console.error('Response text (first 500 chars):', jsonText.substring(0, 500));
+    console.error('Response text (last 500 chars):', jsonText.substring(Math.max(0, jsonText.length - 500)));
+    throw new Error(
+      `Failed to parse Gemini API response as JSON: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`
+    );
+  }
 
   // Validate and enhance generated questions
   questions.forEach((q, index) => {
@@ -259,7 +277,12 @@ ${statsText}
   "recommendedTopics": ["学習すべきトピック1", "トピック2", "トピック3"]
 }
 
-JSONのみを返してください。説明文は不要です。`;
+重要な注意事項:
+- JSONのみを返してください。説明文やマークダウンのコードブロックは不要です
+- 文字列内の改行は使わず、1行で記述してください
+- 二重引用符を含む場合は必ずエスケープ（\\"）してください
+- すべての文字列を完全に閉じてください
+- 有効なJSON形式を厳守してください`;
 
   const responseText = await callGeminiApi(prompt);
 
@@ -271,6 +294,15 @@ JSONのみを返してください。説明文は不要です。`;
     jsonText = jsonText.replace(/```\n?/, '').replace(/\n?```$/, '');
   }
 
-  const analysis: WeaknessAnalysis = JSON.parse(jsonText);
-  return analysis;
+  try {
+    const analysis: WeaknessAnalysis = JSON.parse(jsonText);
+    return analysis;
+  } catch (parseError) {
+    console.error('Failed to parse JSON response from Gemini API in analyzeWeakness');
+    console.error('Parse error:', parseError);
+    console.error('Response text:', jsonText);
+    throw new Error(
+      `Failed to parse Gemini API response as JSON: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`
+    );
+  }
 };
