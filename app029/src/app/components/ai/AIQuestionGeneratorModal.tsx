@@ -14,6 +14,7 @@
 import { useState, useEffect } from 'react';
 import { Question, Difficulty } from '@/lib/types';
 import { generateQuestions } from '@/lib/geminiService';
+import { useQuizStore } from '@/store/useQuizStore';
 
 interface AIQuestionGeneratorModalProps {
   isOpen: boolean;
@@ -87,6 +88,11 @@ export default function AIQuestionGeneratorModal({
 
       // 成功時のコールバック
       setTimeout(() => {
+        // 生成された問題をストアに保存
+        questions.forEach(q => {
+          useQuizStore.getState().addAIGeneratedQuestion(q);
+        });
+
         onGenerated(questions, category);
         onClose();
       }, 300); // 進捗バーを一瞬見せるため
@@ -187,10 +193,9 @@ export default function AIQuestionGeneratorModal({
                     key={diff.value}
                     className={`
                       flex flex-1 cursor-pointer items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold transition-all
-                      ${
-                        difficulty === diff.value
-                          ? 'border-emerald-500 bg-emerald-500/20 text-emerald-200'
-                          : 'border-white/10 bg-slate-800 text-white/70 hover:border-white/20 hover:text-white'
+                      ${difficulty === diff.value
+                        ? 'border-emerald-500 bg-emerald-500/20 text-emerald-200'
+                        : 'border-white/10 bg-slate-800 text-white/70 hover:border-white/20 hover:text-white'
                       }
                       ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
                     `}
@@ -220,10 +225,9 @@ export default function AIQuestionGeneratorModal({
                     key={c}
                     className={`
                       flex flex-1 cursor-pointer items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold transition-all
-                      ${
-                        count === c
-                          ? 'border-emerald-500 bg-emerald-500/20 text-emerald-200'
-                          : 'border-white/10 bg-slate-800 text-white/70 hover:border-white/20 hover:text-white'
+                      ${count === c
+                        ? 'border-emerald-500 bg-emerald-500/20 text-emerald-200'
+                        : 'border-white/10 bg-slate-800 text-white/70 hover:border-white/20 hover:text-white'
                       }
                       ${isLoading ? 'cursor-not-allowed opacity-50' : ''}
                     `}

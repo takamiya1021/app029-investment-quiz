@@ -150,20 +150,31 @@ JSONフォーマットで出力してください:
 ]
 
 重要な注意事項:
-- JSONのみを返してください。説明文やマークダウンのコードブロックは不要です
-- 文字列内の改行は使わず、1行で記述してください
+- 必ず有効なJSON形式（RFC8259準拠）で出力してください
+- プロパティ名は必ず二重引用符（"）で囲んでください
+- 末尾のカンマ（trailing commas）は使用しないでください
+- 文字列内の改行はエスケープ（\\n）するか、使用しないでください
 - 二重引用符を含む場合は必ずエスケープ（\\"）してください
-- すべての文字列を完全に閉じてください
-- 有効なJSON形式を厳守してください`;
+- JSON以外の説明文や会話文は一切含めないでください`;
 
   const responseText = await callGeminiApi(prompt);
 
-  // Extract JSON from response (remove markdown code blocks if present)
+  // Extract JSON from response
   let jsonText = responseText.trim();
-  if (jsonText.startsWith('```json')) {
-    jsonText = jsonText.replace(/```json\n?/, '').replace(/\n?```$/, '');
-  } else if (jsonText.startsWith('```')) {
-    jsonText = jsonText.replace(/```\n?/, '').replace(/\n?```$/, '');
+
+  // マークダウンのコードブロック削除
+  if (jsonText.includes('```json')) {
+    jsonText = jsonText.split('```json')[1].split('```')[0].trim();
+  } else if (jsonText.includes('```')) {
+    jsonText = jsonText.split('```')[1].split('```')[0].trim();
+  }
+
+  // 配列の開始と終了を探して抽出（余計なテキストが含まれている場合の対策）
+  const startIndex = jsonText.indexOf('[');
+  const endIndex = jsonText.lastIndexOf(']');
+
+  if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+    jsonText = jsonText.substring(startIndex, endIndex + 1);
   }
 
   // JSONパース（エラーハンドリング強化）

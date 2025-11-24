@@ -7,6 +7,7 @@ export interface GenerateQuizOptions {
   category?: string;
   difficulty?: Difficulty;
   count?: number;
+  source?: Question[]; // カスタム問題ソース（AI生成問題を含む）
 }
 
 export interface QuizScore {
@@ -29,16 +30,48 @@ const ensureMatchingLength = (answers: (number | null)[], questions: Question[])
   }
 };
 
+const shuffleInPlace = <T>(items: T[]): void => {
+  for (let index = items.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    const temp = items[index];
+    items[index] = items[randomIndex];
+    items[randomIndex] = temp;
+  }
+};
+
 export const generateQuiz = ({
   category,
   difficulty,
   count = DEFAULT_QUIZ_COUNT,
-}: GenerateQuizOptions = {}): Question[] =>
-  pickRandomQuestions({
+  source,
+}: GenerateQuizOptions = {}): Question[] => {
+  // カスタムソースが指定されている場合はそれを使用
+  if (source && source.length > 0) {
+    const filtered = source.filter((question) => {
+      const categoryMatch = category ? question.category === category : true;
+      const difficultyMatch = difficulty ? question.difficulty === difficulty : true;
+      return categoryMatch && difficultyMatch;
+    });
+
+    if (filtered.length < count) {
+      // 問題数が足りない場合は全て返す
+      const pool = [...filtered];
+      shuffleInPlace(pool);
+      return pool;
+    }
+
+    const pool = [...filtered];
+    shuffleInPlace(pool);
+    return pool.slice(0, count);
+  }
+
+  // デフォルトはquestionBankから取得
+  return pickRandomQuestions({
     category,
     difficulty,
     count,
   });
+};
 
 export const checkAnswer = (question: Question, answerIndex: number | null): boolean => {
   if (answerIndex === null) {

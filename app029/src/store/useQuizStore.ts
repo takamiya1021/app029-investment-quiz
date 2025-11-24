@@ -326,14 +326,44 @@ export const createQuizStore: StateCreator<QuizStoreState> = (set, get) => ({
 
   loadQuestions: () => {
     const loaded = getAllQuestions();
+
+    // Load AI generated questions from storage
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('investment-quiz-ai-questions');
+      if (stored) {
+        try {
+          const aiQuestions = JSON.parse(stored);
+          if (Array.isArray(aiQuestions)) {
+            // Merge avoiding duplicates
+            const existingIds = new Set(loaded.map(q => q.id));
+            aiQuestions.forEach(q => {
+              if (!existingIds.has(q.id)) {
+                loaded.push(q);
+              }
+            });
+          }
+        } catch (e) {
+          console.error('Failed to load AI questions', e);
+        }
+      }
+    }
+
     set({ questions: loaded });
   },
 
   addAIGeneratedQuestion: (question) => {
     set((state) => {
       const filtered = state.questions.filter((q) => q.id !== question.id);
+      const newQuestions = [...filtered, question];
+
+      // Save to local storage
+      if (typeof window !== 'undefined') {
+        const aiQuestions = newQuestions.filter(q => q.id.startsWith('ai-'));
+        localStorage.setItem('investment-quiz-ai-questions', JSON.stringify(aiQuestions));
+      }
+
       return {
-        questions: [...filtered, question],
+        questions: newQuestions,
       };
     });
   },

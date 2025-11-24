@@ -45,6 +45,7 @@ function CategoryView() {
   const startQuiz = useQuizStore((state) => state.startQuiz);
   const categoryAccuracy = useQuizStore((state) => state.categoryAccuracy);
   const getWrongQuestions = useQuizStore((state) => state.getWrongQuestions);
+  const allQuestions = useQuizStore((state) => state.questions);
 
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const hasKey = hasApiKey();
@@ -75,7 +76,11 @@ function CategoryView() {
   };
 
   const handleRandomStart = () => {
-    const quiz = generateQuiz({ count: 10 });
+    // AI生成問題を含む全問題からランダムに10問出題
+    const quiz = generateQuiz({
+      count: 10,
+      source: allQuestions.length > 0 ? allQuestions : undefined,
+    });
     startQuiz({
       category: 'ランダム',
       difficulty: DEFAULT_DIFFICULTY,
@@ -138,10 +143,9 @@ function CategoryView() {
               disabled={!hasKey}
               className={`
                 rounded-full border px-5 py-3 text-sm font-semibold transition
-                ${
-                  hasKey
-                    ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-300 hover:border-emerald-400/60 hover:bg-emerald-400/20'
-                    : 'cursor-not-allowed border-white/10 bg-white/5 text-white/40'
+                ${hasKey
+                  ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-300 hover:border-emerald-400/60 hover:bg-emerald-400/20'
+                  : 'cursor-not-allowed border-white/10 bg-white/5 text-white/40'
                 }
               `}
               title={hasKey ? 'AI問題を生成' : 'APIキーを設定してください'}
@@ -192,6 +196,7 @@ function QuestionView() {
   const answerQuestion = useQuizStore((state) => state.answerQuestion);
   const nextQuestion = useQuizStore((state) => state.nextQuestion);
   const finishQuiz = useQuizStore((state) => state.finishQuiz);
+  const reset = useQuizStore((state) => state.reset);
 
   const currentIndex = session.currentIndex;
   const question = session.questions[currentIndex];
@@ -239,11 +244,10 @@ function QuestionView() {
                   type="button"
                   onClick={() => handleChoice(index)}
                   aria-label={`選択肢 ${index + 1}`}
-                  className={`flex flex-col rounded-2xl border px-5 py-4 text-left transition ${
-                    isSelected
-                      ? 'border-emerald-400 bg-emerald-400/10'
-                      : 'border-white/15 hover:border-white/40 hover:bg-white/5'
-                  }`}
+                  className={`flex flex-col rounded-2xl border px-5 py-4 text-left transition ${isSelected
+                    ? 'border-emerald-400 bg-emerald-400/10'
+                    : 'border-white/15 hover:border-white/40 hover:bg-white/5'
+                    }`}
                 >
                   <span className="text-xs font-semibold text-white/60">選択肢 {index + 1}</span>
                   <span className="mt-1 text-base font-medium text-white">{choice}</span>
@@ -252,7 +256,18 @@ function QuestionView() {
             })}
           </div>
 
-          <div className="mt-6 flex justify-between">
+          <div className="mt-6 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm('クイズを中断してトップに戻りますか？\n現在の進捗は失われます。')) {
+                  reset();
+                }
+              }}
+              className="rounded-full px-4 py-2 text-sm font-medium text-white/50 transition hover:bg-white/10 hover:text-white"
+            >
+              中断して戻る
+            </button>
             <button
               type="button"
               onClick={handleNext}
