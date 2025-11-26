@@ -53,6 +53,11 @@ const callGeminiApi = async (
   const apiKey = getApiKey();
   const url = GEMINI_API_ENDPOINT;
 
+  // タイムアウト設定（30秒）
+  const TIMEOUT_MS = 30000;
+  const abortController = new AbortController();
+  const timeoutId = setTimeout(() => abortController.abort(), TIMEOUT_MS);
+
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -77,7 +82,11 @@ const callGeminiApi = async (
           maxOutputTokens: 8192,
         },
       }),
+      signal: abortController.signal,
     });
+
+    // タイムアウトをクリア
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       // エラーレスポンスの詳細を取得
@@ -108,6 +117,16 @@ const callGeminiApi = async (
 
     return data.candidates[0].content.parts[0].text;
   } catch (error) {
+    // タイムアウトをクリア（エラー時も確実にクリア）
+    clearTimeout(timeoutId);
+
+    // タイムアウトエラーの場合
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error(
+        'AI応答がタイムアウトしました（30秒）。ネットワーク接続を確認するか、しばらく時間をおいて再度お試しください。'
+      );
+    }
+
     // ネットワークエラーの場合
     if (error instanceof Error && error.message !== 'Max retries reached') {
       throw error;
